@@ -1,4 +1,152 @@
 // ===============================================
+// ANIMATED CODE BACKGROUND (CANVAS)
+// ===============================================
+
+(function() {
+    const canvas = document.getElementById('codeCanvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas size
+    function resizeCanvas() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    // Cool coding symbols and keywords
+    const codeSnippets = [
+        '{ }', '[ ]', '< />', '( )', '=>', '===', '!==',
+        'const', 'let', 'var', 'function', 'class', 'async', 'await',
+        'if', 'else', 'return', 'import', 'export', 'default',
+        'React', 'Node', 'MongoDB', 'Express', 'JS', 'CSS', 'HTML',
+        'map()', 'filter()', 'reduce()', 'useState', 'useEffect',
+        '&&', '||', '...', 'try', 'catch', 'new', 'this'
+    ];
+    
+    // Color palette for syntax highlighting
+    const colors = [
+        { r: 255, g: 215, b: 0, name: 'gold' },      // Gold - keywords
+        { r: 102, g: 198, b: 204, name: 'cyan' },    // Cyan - functions
+        { r: 255, g: 121, b: 198, name: 'pink' },    // Pink - strings
+        { r: 130, g: 170, b: 255, name: 'blue' },    // Light blue - variables
+        { r: 189, g: 147, b: 249, name: 'purple' },  // Purple - operators
+        { r: 80, g: 250, b: 123, name: 'green' }     // Green - brackets
+    ];
+    
+    // Particle class for falling code with syntax colors
+    class CodeParticle {
+        constructor() {
+            this.reset();
+        }
+        
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height - canvas.height;
+            this.speed = 0.5 + Math.random() * 2;
+            this.snippet = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+            this.fontSize = 16 + Math.random() * 10;
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.opacity = 0.4 + Math.random() * 0.4;
+            this.rotation = Math.random() * 0.2 - 0.1;
+        }
+        
+        update() {
+            this.y += this.speed;
+            if (this.y > canvas.height + 50) {
+                this.reset();
+                this.y = -50;
+            }
+        }
+        
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rotation);
+            ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${this.opacity})`;
+            ctx.font = `bold ${this.fontSize}px 'Courier New', monospace`;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.8)`;
+            ctx.fillText(this.snippet, 0, 0);
+            ctx.restore();
+        }
+    }
+    
+    // Create more particles for denser effect
+    const particleCount = 80;
+    const particles = [];
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new CodeParticle());
+    }
+    
+    // Glowing floating dots
+    class FloatingDot {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.radius = 1.5 + Math.random() * 2.5;
+            this.vx = (Math.random() - 0.5) * 0.8;
+            this.vy = (Math.random() - 0.5) * 0.8;
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.opacity = 0.4 + Math.random() * 0.5;
+            this.pulse = Math.random() * Math.PI * 2;
+        }
+        
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.pulse += 0.05;
+            
+            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        }
+        
+        draw() {
+            const pulseSize = this.radius + Math.sin(this.pulse) * 0.5;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, pulseSize, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${this.opacity})`;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.8)`;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+    }
+    
+    // Create more glowing dots
+    const dotCount = 100;
+    const dots = [];
+    for (let i = 0; i < dotCount; i++) {
+        dots.push(new FloatingDot());
+    }
+    
+    // Animation loop
+    function animate() {
+        // Fade effect instead of clear for trail
+        ctx.fillStyle = 'rgba(26, 26, 46, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Update and draw dots
+        dots.forEach(dot => {
+            dot.update();
+            dot.draw();
+        });
+        
+        // Update and draw falling code
+        particles.forEach(particle => {
+            particle.update();
+            particle.draw();
+        });
+        
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
+})();
+
+// ===============================================
 // NAVIGATION MENU TOGGLE
 // ===============================================
 
@@ -28,11 +176,13 @@ const navbar = document.querySelector('.navbar');
 
 window.addEventListener('scroll', () => {
     if (window.scrollY > 100) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.backdropFilter = 'blur(10px)';
+        navbar.style.background = 'rgba(255, 255, 255, 0.15)';
+        navbar.style.backdropFilter = 'blur(25px) saturate(180%)';
+        navbar.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.2)';
     } else {
-        navbar.style.background = '#ffffff';
-        navbar.style.backdropFilter = 'none';
+        navbar.style.background = 'rgba(255, 255, 255, 0.1)';
+        navbar.style.backdropFilter = 'blur(20px) saturate(180%)';
+        navbar.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.15)';
     }
 });
 
