@@ -1,3 +1,13 @@
-.gitignore
+
+# macOS
 .DS_Store
-README.md
+
+# Node
+node_modules/
+
+# Environment
+.env
+
+# Build outputs
+dist/
+build/
