@@ -2,12 +2,4 @@
 # macOS
 .DS_Store
 
-# Node
-node_modules/
-
-# Environment
-.env
-
-# Build outputs
-dist/
-build/
+.gitignore
