@@ -260,3 +260,13 @@ Fully responsive design with hamburger menu and optimized layouts for smaller sc
 **Built with ❤️ by Keshav Goyal**
 
 For questions or suggestions, feel free to reach out via the contact form on the website!
+
+## 🏆 Hacktoberfest 2025
+
+I participated in Hacktoberfest 2025, contributing to documentation improvements, bug fixes, and accessibility enhancements across several open-source repositories. Highlights:
+
+- Contributed to 6+ repositories (documentation, tests, small features)
+- Fixed accessibility issues in frontend components (aria attributes, keyboard navigation)
+- Added unit tests and improved README contribution guides to help future contributors
+
+See my contributions on GitHub: https://github.com/keshav-pec?tab=repositories
