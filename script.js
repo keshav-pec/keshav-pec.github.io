@@ -81,58 +81,10 @@
         particles.push(new CodeParticle());
     }
     
-    // Glowing floating dots
-    class FloatingDot {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.radius = 1.5 + Math.random() * 2.5;
-            this.vx = (Math.random() - 0.5) * 0.8;
-            this.vy = (Math.random() - 0.5) * 0.8;
-            this.color = colors[Math.floor(Math.random() * colors.length)];
-            this.opacity = 0.4 + Math.random() * 0.5;
-            this.pulse = Math.random() * Math.PI * 2;
-        }
-        
-        update() {
-            this.x += this.vx;
-            this.y += this.vy;
-            this.pulse += 0.05;
-            
-            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-        }
-        
-        draw() {
-            const pulseSize = this.radius + Math.sin(this.pulse) * 0.5;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, pulseSize, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${this.opacity})`;
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.8)`;
-            ctx.fill();
-            ctx.shadowBlur = 0;
-        }
-    }
-    
-    // Create more glowing dots
-    const dotCount = 100;
-    const dots = [];
-    for (let i = 0; i < dotCount; i++) {
-        dots.push(new FloatingDot());
-    }
-    
     // Animation loop
     function animate() {
-        // Fade effect instead of clear for trail
-        ctx.fillStyle = 'rgba(26, 26, 46, 0.1)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Update and draw dots
-        dots.forEach(dot => {
-            dot.update();
-            dot.draw();
-        });
+        // Clear canvas completely (no trail effect)
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         // Update and draw falling code
         particles.forEach(particle => {
@@ -262,9 +214,8 @@ animateElements.forEach(el => {
 const subtitleElement = document.querySelector('.hero-subtitle');
 const subtitles = [
     'Full Stack Developer',
-    'MERN Stack Specialist',
-    'CS Student @ PEC',
-    'Frontend Developer @ SlugLime',
+    'CSE Student @PEC',
+    'Frontend Specialist',
     'Problem Solver'
 ];
 
