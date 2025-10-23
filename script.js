@@ -83,8 +83,9 @@
     
     // Animation loop
     function animate() {
-        // Clear canvas completely (no trail effect)
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Very subtle fade effect to maintain glow without visible trail
+        ctx.fillStyle = 'rgba(26, 26, 46, 0.3)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         // Update and draw falling code
         particles.forEach(particle => {
