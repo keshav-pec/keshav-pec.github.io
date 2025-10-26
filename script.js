@@ -216,7 +216,6 @@ const subtitleElement = document.querySelector('.hero-subtitle');
 const subtitles = [
     'Full Stack Developer',
     'CSE Student @PEC',
-    'Frontend Specialist',
     'Problem Solver'
 ];
 
