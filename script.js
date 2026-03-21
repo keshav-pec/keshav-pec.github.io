@@ -3,9 +3,11 @@
 // ===============================================
 
 (function() {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // Cursor trail (desktop/laptop only)
     const supportsFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    if (supportsFinePointer) {
+    if (supportsFinePointer && !prefersReducedMotion) {
         const trailCount = 14;
         const baseDotSize = 20;
         const trailDots = [];
@@ -46,7 +48,7 @@
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
-        });
+        }, { passive: true });
 
         document.addEventListener('mouseover', (e) => {
             if (e.target.closest(interactiveSelector)) {
@@ -82,7 +84,14 @@
         canvas.height = canvas.offsetHeight;
     }
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    let resizeTick = null;
+    window.addEventListener('resize', () => {
+        if (resizeTick) cancelAnimationFrame(resizeTick);
+        resizeTick = requestAnimationFrame(() => {
+            resizeCanvas();
+            resizeTick = null;
+        });
+    }, { passive: true });
     
     // Cool coding symbols and keywords
     const codeSnippets = [
@@ -143,13 +152,15 @@
     }
     
     // Create more particles for denser effect
-    const particleCount = 80;
+    const particleCount = prefersReducedMotion ? 30 : 72;
     const particles = [];
     for (let i = 0; i < particleCount; i++) {
         particles.push(new CodeParticle());
     }
     
     // Animation loop
+    let canvasAnimationId = null;
+
     function animate() {
         // Very subtle fade effect to maintain glow without visible trail
         ctx.fillStyle = 'rgba(5, 7, 13, 0.35)';
@@ -161,10 +172,31 @@
             particle.draw();
         });
         
-        requestAnimationFrame(animate);
+        canvasAnimationId = requestAnimationFrame(animate);
     }
-    
-    animate();
+
+    function startCanvasAnimation() {
+        if (canvasAnimationId === null) {
+            animate();
+        }
+    }
+
+    function stopCanvasAnimation() {
+        if (canvasAnimationId !== null) {
+            cancelAnimationFrame(canvasAnimationId);
+            canvasAnimationId = null;
+        }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopCanvasAnimation();
+        } else {
+            startCanvasAnimation();
+        }
+    });
+
+    startCanvasAnimation();
 })();
 
 // ===============================================
@@ -194,21 +226,24 @@ navLinks.forEach(link => {
 // ===============================================
 
 const navbar = document.querySelector('.navbar');
+const heroContent = document.querySelector('.hero-content');
+const sections = Array.from(document.querySelectorAll('section'));
+let scrollTopBtn = null;
+let sectionPositions = [];
 
 // Scroll progress indicator
 const scrollProgress = document.createElement('div');
 scrollProgress.className = 'scroll-progress';
 document.body.appendChild(scrollProgress);
 
-function updateScrollProgress() {
-    const scrollTop = window.scrollY || window.pageYOffset;
+function updateScrollProgress(scrollTop = window.scrollY || window.pageYOffset) {
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
     scrollProgress.style.width = `${progress}%`;
 }
 
-window.addEventListener('scroll', () => {
-    if (window.scrollY > 100) {
+function updateNavbarStyles(scrollTop = window.scrollY || window.pageYOffset) {
+    if (scrollTop > 100) {
         navbar.style.background = 'rgba(255, 255, 255, 0.15)';
         navbar.style.backdropFilter = 'blur(25px) saturate(180%)';
         navbar.style.boxShadow = '0 8px 32px 0 rgba(37, 99, 235, 0.2)';
@@ -217,12 +252,69 @@ window.addEventListener('scroll', () => {
         navbar.style.backdropFilter = 'blur(20px) saturate(180%)';
         navbar.style.boxShadow = '0 8px 32px 0 rgba(37, 99, 235, 0.18)';
     }
+}
 
+function measureSectionPositions() {
+    sectionPositions = sections.map(section => ({
+        id: section.getAttribute('id'),
+        top: section.offsetTop - 120
+    }));
+}
+
+function updateActiveNav(scrollTop = window.scrollY || window.pageYOffset) {
+    let current = sectionPositions[0]?.id || '';
+
+    sectionPositions.forEach(section => {
+        if (scrollTop >= section.top) {
+            current = section.id;
+        }
+    });
+
+    navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
+    });
+}
+
+function updateHeroParallax(scrollTop = window.scrollY || window.pageYOffset) {
+    if (!heroContent) return;
+    const shift = Math.min(scrollTop * 0.12, 72);
+    const fade = Math.max(0.72, 1 - scrollTop / 900);
+    heroContent.style.transform = `translate3d(0, ${shift}px, 0)`;
+    heroContent.style.opacity = fade.toFixed(3);
+}
+
+let scrollTicking = false;
+function handleScroll() {
+    if (scrollTicking) return;
+
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+        const scrollTop = window.scrollY || window.pageYOffset;
+        updateNavbarStyles(scrollTop);
+        updateScrollProgress(scrollTop);
+        updateActiveNav(scrollTop);
+        updateHeroParallax(scrollTop);
+
+        if (scrollTopBtn) {
+            scrollTopBtn.style.display = scrollTop > 300 ? 'flex' : 'none';
+        }
+
+        scrollTicking = false;
+    });
+}
+
+window.addEventListener('scroll', handleScroll, { passive: true });
+window.addEventListener('resize', () => {
+    measureSectionPositions();
     updateScrollProgress();
-});
+    updateActiveNav();
+}, { passive: true });
 
-window.addEventListener('resize', updateScrollProgress);
+measureSectionPositions();
+updateNavbarStyles();
 updateScrollProgress();
+updateActiveNav();
+updateHeroParallax();
 
 // ===============================================
 // SMOOTH SCROLLING FOR NAVIGATION LINKS
@@ -246,26 +338,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // ACTIVE NAVIGATION LINK ON SCROLL
 // ===============================================
 
-const sections = document.querySelectorAll('section');
-
-window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.clientHeight;
-        if (window.pageYOffset >= sectionTop - 100) {
-            current = section.getAttribute('id');
-        }
-    });
-
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
-            link.classList.add('active');
-        }
-    });
-});
-
 // ===============================================
 // SCROLL REVEAL ANIMATION
 // ===============================================
@@ -275,22 +347,20 @@ const observerOptions = {
     rootMargin: '0px 0px -100px 0px'
 };
 
-const observer = new IntersectionObserver((entries) => {
+const observer = new IntersectionObserver((entries, obs) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+            entry.target.classList.add('in-view');
+            obs.unobserve(entry.target);
         }
     });
 }, observerOptions);
 
 // Observe elements for animation
-const animateElements = document.querySelectorAll('.skill-category, .project-card, .timeline-item, .contact-content > *');
+const animateElements = document.querySelectorAll('.section-title, .about-content, .skill-category, .timeline-item, .project-card, .contact-content > *, .footer-section');
 animateElements.forEach((el, index) => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
-    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    el.style.transitionDelay = `${Math.min(0.45, (index % 6) * 0.07)}s`;
+    el.classList.add('reveal');
+    el.style.transitionDelay = `${Math.min(420, (index % 6) * 70)}ms`;
     observer.observe(el);
 });
 
@@ -404,7 +474,7 @@ skillTags.forEach((tag, index) => {
 // ===============================================
 
 // Create scroll to top button
-const scrollTopBtn = document.createElement('button');
+scrollTopBtn = document.createElement('button');
 scrollTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
 scrollTopBtn.className = 'scroll-top-btn';
 scrollTopBtn.style.cssText = `
@@ -428,15 +498,6 @@ scrollTopBtn.style.cssText = `
 `;
 document.body.appendChild(scrollTopBtn);
 
-// Show/hide scroll to top button
-window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 300) {
-        scrollTopBtn.style.display = 'flex';
-    } else {
-        scrollTopBtn.style.display = 'none';
-    }
-});
-
 // Scroll to top on click
 scrollTopBtn.addEventListener('click', () => {
     window.scrollTo({
@@ -452,39 +513,6 @@ scrollTopBtn.addEventListener('mouseenter', () => {
 
 scrollTopBtn.addEventListener('mouseleave', () => {
     scrollTopBtn.style.transform = 'translateY(0)';
-});
-
-// ===============================================
-// PRELOADER (OPTIONAL)
-// ===============================================
-
-window.addEventListener('load', () => {
-    const preloader = document.createElement('div');
-    preloader.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: opacity 0.5s ease;
-    `;
-    preloader.innerHTML = '<div style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #4a90e2; border-radius: 50%; animation: spin 1s linear infinite;"></div>';
-    
-    const style = document.createElement('style');
-    style.textContent = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
-    document.head.appendChild(style);
-    
-    setTimeout(() => {
-        preloader.style.opacity = '0';
-        setTimeout(() => {
-            preloader.remove();
-        }, 500);
-    }, 1000);
 });
 
 // ===============================================
