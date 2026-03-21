@@ -6,7 +6,8 @@
     // Cursor trail (desktop/laptop only)
     const supportsFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     if (supportsFinePointer) {
-        const trailCount = 10;
+        const trailCount = 14;
+        const baseDotSize = 20;
         const trailDots = [];
         const positions = [];
         let mouseX = window.innerWidth / 2;
@@ -16,8 +17,8 @@
         for (let i = 0; i < trailCount; i++) {
             const dot = document.createElement('span');
             dot.className = 'cursor-trail-dot';
-            dot.style.width = `${12 - i * 0.8}px`;
-            dot.style.height = `${12 - i * 0.8}px`;
+            dot.style.width = `${Math.max(5, baseDotSize - i * 1.1)}px`;
+            dot.style.height = `${Math.max(5, baseDotSize - i * 1.1)}px`;
             dot.style.opacity = `${Math.max(0.18, 0.9 - i * 0.08)}`;
             document.body.appendChild(dot);
             trailDots.push(dot);

@@ -49,11 +49,11 @@ body {
     pointer-events: none;
     z-index: 2000;
     opacity: 0;
-    width: 12px;
-    height: 12px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(147, 197, 253, 0.75) 45%, rgba(37, 99, 235, 0.35) 100%);
-    box-shadow: 0 0 16px rgba(96, 165, 250, 0.35);
+    box-shadow: 0 0 24px rgba(96, 165, 250, 0.4);
     mix-blend-mode: screen;
     transition: opacity 0.28s ease, transform 0.2s ease, filter 0.2s ease;
 }
@@ -64,7 +64,14 @@ body {
 
 .cursor-trail-dot.hover {
     filter: brightness(1.2);
-    transform: translate(-50%, -50%) scale(1.25);
+    transform: translate(-50%, -50%) scale(1.4);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    body,
+    body * {
+        cursor: none !important;
+    }
 }
 
 .scroll-progress {
