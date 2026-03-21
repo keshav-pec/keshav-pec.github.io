@@ -3,6 +3,73 @@
 // ===============================================
 
 (function() {
+    // Cursor trail (desktop/laptop only)
+    const supportsFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (supportsFinePointer) {
+        const trailCount = 10;
+        const trailDots = [];
+        const positions = [];
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        const interactiveSelector = 'a, button, .btn, .nav-link, .project-link, .skill-tag, .nav-social, .hamburger, input, textarea, label';
+
+        for (let i = 0; i < trailCount; i++) {
+            const dot = document.createElement('span');
+            dot.className = 'cursor-trail-dot';
+            dot.style.width = `${12 - i * 0.8}px`;
+            dot.style.height = `${12 - i * 0.8}px`;
+            dot.style.opacity = `${Math.max(0.18, 0.9 - i * 0.08)}`;
+            document.body.appendChild(dot);
+            trailDots.push(dot);
+            positions.push({ x: mouseX, y: mouseY });
+        }
+
+        function animateTrail() {
+            positions[0].x += (mouseX - positions[0].x) * 0.35;
+            positions[0].y += (mouseY - positions[0].y) * 0.35;
+
+            for (let i = 1; i < trailCount; i++) {
+                positions[i].x += (positions[i - 1].x - positions[i].x) * 0.38;
+                positions[i].y += (positions[i - 1].y - positions[i].y) * 0.38;
+            }
+
+            trailDots.forEach((dot, i) => {
+                dot.style.left = `${positions[i].x}px`;
+                dot.style.top = `${positions[i].y}px`;
+                dot.classList.add('active');
+            });
+
+            requestAnimationFrame(animateTrail);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest(interactiveSelector)) {
+                trailDots.forEach(dot => dot.classList.add('hover'));
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.closest(interactiveSelector)) {
+                trailDots.forEach(dot => dot.classList.remove('hover'));
+            }
+        });
+
+        document.addEventListener('mouseleave', () => {
+            trailDots.forEach(dot => dot.classList.remove('active', 'hover'));
+        });
+
+        document.addEventListener('mouseenter', () => {
+            trailDots.forEach(dot => dot.classList.add('active'));
+        });
+
+        animateTrail();
+    }
+
     const canvas = document.getElementById('codeCanvas');
     if (!canvas) return;
     
@@ -26,14 +93,14 @@
         '&&', '||', '...', 'try', 'catch', 'new', 'this'
     ];
     
-    // Color palette for syntax highlighting
+    // Color palette for syntax highlighting (blue/black/white theme)
     const colors = [
-        { r: 255, g: 215, b: 0, name: 'gold' },      // Gold - keywords
-        { r: 102, g: 198, b: 204, name: 'cyan' },    // Cyan - functions
-        { r: 255, g: 121, b: 198, name: 'pink' },    // Pink - strings
-        { r: 130, g: 170, b: 255, name: 'blue' },    // Light blue - variables
-        { r: 189, g: 147, b: 249, name: 'purple' },  // Purple - operators
-        { r: 80, g: 250, b: 123, name: 'green' }     // Green - brackets
+        { r: 255, g: 255, b: 255, name: 'white' },      // White - keywords
+        { r: 191, g: 219, b: 254, name: 'ice-blue' },   // Light blue - functions
+        { r: 147, g: 197, b: 253, name: 'soft-blue' },  // Soft blue - strings
+        { r: 96, g: 165, b: 250, name: 'sky-blue' },    // Sky blue - variables
+        { r: 37, g: 99, b: 235, name: 'royal-blue' },   // Deep blue - operators
+        { r: 148, g: 163, b: 184, name: 'slate' }       // Slate - brackets
     ];
     
     // Particle class for falling code with syntax colors
@@ -84,7 +151,7 @@
     // Animation loop
     function animate() {
         // Very subtle fade effect to maintain glow without visible trail
-        ctx.fillStyle = 'rgba(26, 26, 46, 0.3)';
+        ctx.fillStyle = 'rgba(5, 7, 13, 0.35)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         // Update and draw falling code
@@ -127,17 +194,34 @@ navLinks.forEach(link => {
 
 const navbar = document.querySelector('.navbar');
 
+// Scroll progress indicator
+const scrollProgress = document.createElement('div');
+scrollProgress.className = 'scroll-progress';
+document.body.appendChild(scrollProgress);
+
+function updateScrollProgress() {
+    const scrollTop = window.scrollY || window.pageYOffset;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    scrollProgress.style.width = `${progress}%`;
+}
+
 window.addEventListener('scroll', () => {
     if (window.scrollY > 100) {
         navbar.style.background = 'rgba(255, 255, 255, 0.15)';
         navbar.style.backdropFilter = 'blur(25px) saturate(180%)';
-        navbar.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.2)';
+        navbar.style.boxShadow = '0 8px 32px 0 rgba(37, 99, 235, 0.2)';
     } else {
         navbar.style.background = 'rgba(255, 255, 255, 0.1)';
         navbar.style.backdropFilter = 'blur(20px) saturate(180%)';
-        navbar.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.15)';
+        navbar.style.boxShadow = '0 8px 32px 0 rgba(37, 99, 235, 0.18)';
     }
+
+    updateScrollProgress();
 });
+
+window.addEventListener('resize', updateScrollProgress);
+updateScrollProgress();
 
 // ===============================================
 // SMOOTH SCROLLING FOR NAVIGATION LINKS
@@ -201,12 +285,34 @@ const observer = new IntersectionObserver((entries) => {
 
 // Observe elements for animation
 const animateElements = document.querySelectorAll('.skill-category, .project-card, .timeline-item, .contact-content > *');
-animateElements.forEach(el => {
+animateElements.forEach((el, index) => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(30px)';
     el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    el.style.transitionDelay = `${Math.min(0.45, (index % 6) * 0.07)}s`;
     observer.observe(el);
 });
+
+// Subtle 3D tilt animation for cards on desktop
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const tiltCards = document.querySelectorAll('.project-card, .skill-category, .timeline-content');
+
+    tiltCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const rotateY = ((x / rect.width) - 0.5) * 8;
+            const rotateX = ((y / rect.height) - 0.5) * -8;
+
+            card.style.transform = `perspective(900px) translateY(-6px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = '';
+        });
+    });
+}
 
 // ===============================================
 // TYPING EFFECT FOR HERO SUBTITLE
@@ -307,7 +413,7 @@ scrollTopBtn.style.cssText = `
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #2563eb, #0f172a);
     color: white;
     border: none;
     cursor: pointer;
