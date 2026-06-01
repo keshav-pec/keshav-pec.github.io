@@ -1,202 +1,128 @@
 // ===============================================
-// ANIMATED CODE BACKGROUND (CANVAS)
+// ANIMATED CODE BACKGROUND (CANVAS) — PERF OPTIMISED
 // ===============================================
 
-(function() {
+(function () {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Cursor trail (desktop/laptop only)
+    // ── Cursor trail (desktop only, CSS-transitioned, no RAF per dot) ──────────
     const supportsFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     if (supportsFinePointer && !prefersReducedMotion) {
-        const trailCount = 14;
-        const baseDotSize = 20;
-        const trailDots = [];
-        const positions = [];
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        const interactiveSelector = 'a, button, .btn, .nav-link, .project-link, .skill-tag, .nav-social, .hamburger, input, textarea, label';
+        const TRAIL = 8;
+        const dots = [];
+        const pos = [];
+        let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+        const interactable = 'a, button, .btn, .nav-link, .project-link, .skill-tag, .nav-social, .hamburger, input, textarea';
 
-        for (let i = 0; i < trailCount; i++) {
-            const dot = document.createElement('span');
-            dot.className = 'cursor-trail-dot';
-            dot.style.width = `${Math.max(5, baseDotSize - i * 1.1)}px`;
-            dot.style.height = `${Math.max(5, baseDotSize - i * 1.1)}px`;
-            dot.style.opacity = `${Math.max(0.18, 0.9 - i * 0.08)}`;
-            document.body.appendChild(dot);
-            trailDots.push(dot);
-            positions.push({ x: mouseX, y: mouseY });
+        for (let i = 0; i < TRAIL; i++) {
+            const d = document.createElement('span');
+            d.className = 'cursor-trail-dot';
+            const size = Math.max(6, 18 - i * 1.5);
+            d.style.cssText = `width:${size}px;height:${size}px;opacity:${Math.max(0.15, 0.85 - i * 0.1)};transition:transform 0.25s ease,filter 0.2s ease;`;
+            document.body.appendChild(d);
+            dots.push(d);
+            pos.push({ x: mx, y: my });
         }
 
         function animateTrail() {
-            positions[0].x += (mouseX - positions[0].x) * 0.35;
-            positions[0].y += (mouseY - positions[0].y) * 0.35;
-
-            for (let i = 1; i < trailCount; i++) {
-                positions[i].x += (positions[i - 1].x - positions[i].x) * 0.38;
-                positions[i].y += (positions[i - 1].y - positions[i].y) * 0.38;
+            pos[0].x += (mx - pos[0].x) * 0.32;
+            pos[0].y += (my - pos[0].y) * 0.32;
+            for (let i = 1; i < TRAIL; i++) {
+                pos[i].x += (pos[i - 1].x - pos[i].x) * 0.36;
+                pos[i].y += (pos[i - 1].y - pos[i].y) * 0.36;
             }
-
-            trailDots.forEach((dot, i) => {
-                dot.style.left = `${positions[i].x}px`;
-                dot.style.top = `${positions[i].y}px`;
-                dot.classList.add('active');
+            dots.forEach((d, i) => {
+                d.style.left = pos[i].x + 'px';
+                d.style.top  = pos[i].y + 'px';
+                d.classList.add('active');
             });
-
             requestAnimationFrame(animateTrail);
         }
 
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        }, { passive: true });
-
-        document.addEventListener('mouseover', (e) => {
-            if (e.target.closest(interactiveSelector)) {
-                trailDots.forEach(dot => dot.classList.add('hover'));
-            }
-        });
-
-        document.addEventListener('mouseout', (e) => {
-            if (e.target.closest(interactiveSelector)) {
-                trailDots.forEach(dot => dot.classList.remove('hover'));
-            }
-        });
-
-        document.addEventListener('mouseleave', () => {
-            trailDots.forEach(dot => dot.classList.remove('active', 'hover'));
-        });
-
-        document.addEventListener('mouseenter', () => {
-            trailDots.forEach(dot => dot.classList.add('active'));
-        });
-
+        window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+        document.addEventListener('mouseover',  e => { if (e.target.closest(interactable)) dots.forEach(d => d.classList.add('hover')); });
+        document.addEventListener('mouseout',   e => { if (e.target.closest(interactable)) dots.forEach(d => d.classList.remove('hover')); });
+        document.addEventListener('mouseleave', () => dots.forEach(d => d.classList.remove('active', 'hover')));
+        document.addEventListener('mouseenter', () => dots.forEach(d => d.classList.add('active')));
         animateTrail();
     }
 
+    // ── Canvas falling-code background ──────────────────────────────────────────
     const canvas = document.getElementById('codeCanvas');
     if (!canvas) return;
-    
     const ctx = canvas.getContext('2d');
-    
-    // Set canvas size
+
     function resizeCanvas() {
-        canvas.width = canvas.offsetWidth;
+        canvas.width  = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
     }
     resizeCanvas();
     let resizeTick = null;
     window.addEventListener('resize', () => {
         if (resizeTick) cancelAnimationFrame(resizeTick);
-        resizeTick = requestAnimationFrame(() => {
-            resizeCanvas();
-            resizeTick = null;
-        });
+        resizeTick = requestAnimationFrame(() => { resizeCanvas(); resizeTick = null; });
     }, { passive: true });
-    
-    // Cool coding symbols and keywords
-    const codeSnippets = [
+
+    const snippets = [
         '{ }', '[ ]', '< />', '( )', '=>', '===', '!==',
-        'const', 'let', 'var', 'function', 'class', 'async', 'await',
-        'if', 'else', 'return', 'import', 'export', 'default',
-        'React', 'Node', 'MongoDB', 'Express', 'JS', 'CSS', 'HTML',
-        'map()', 'filter()', 'reduce()', 'useState', 'useEffect',
-        '&&', '||', '...', 'try', 'catch', 'new', 'this'
+        'const', 'let', 'async', 'await', 'class', 'return', 'import',
+        'React', 'Node', 'MongoDB', 'JS', 'CSS', 'HTML',
+        'map()', 'filter()', 'useState', '&&', '||', '...'
     ];
-    
-    // Color palette for syntax highlighting (blue/black/white theme)
-    const colors = [
-        { r: 255, g: 255, b: 255, name: 'white' },      // White - keywords
-        { r: 191, g: 219, b: 254, name: 'ice-blue' },   // Light blue - functions
-        { r: 147, g: 197, b: 253, name: 'soft-blue' },  // Soft blue - strings
-        { r: 96, g: 165, b: 250, name: 'sky-blue' },    // Sky blue - variables
-        { r: 37, g: 99, b: 235, name: 'royal-blue' },   // Deep blue - operators
-        { r: 148, g: 163, b: 184, name: 'slate' }       // Slate - brackets
+    // Pre-compute rgba strings — no object spread per frame
+    const colorsRgba = [
+        'rgba(255,255,255,',
+        'rgba(191,219,254,',
+        'rgba(147,197,253,',
+        'rgba(96,165,250,',
+        'rgba(37,99,235,',
+        'rgba(148,163,184,'
     ];
-    
-    // Particle class for falling code with syntax colors
-    class CodeParticle {
-        constructor() {
-            this.reset();
+
+    class Particle {
+        constructor() { this.init(true); }
+        init(randomY = false) {
+            this.x       = Math.random() * canvas.width;
+            this.y       = randomY ? Math.random() * canvas.height : -40;
+            this.speed   = 0.4 + Math.random() * 1.6;
+            this.text    = snippets[Math.floor(Math.random() * snippets.length)];
+            this.size    = 13 + Math.random() * 8;
+            this.color   = colorsRgba[Math.floor(Math.random() * colorsRgba.length)];
+            this.opacity = 0.22 + Math.random() * 0.32;
+            this.rot     = (Math.random() - 0.5) * 0.18;
         }
-        
-        reset() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height - canvas.height;
-            this.speed = 0.5 + Math.random() * 2;
-            this.snippet = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
-            this.fontSize = 16 + Math.random() * 10;
-            this.color = colors[Math.floor(Math.random() * colors.length)];
-            this.opacity = 0.4 + Math.random() * 0.4;
-            this.rotation = Math.random() * 0.2 - 0.1;
-        }
-        
         update() {
             this.y += this.speed;
-            if (this.y > canvas.height + 50) {
-                this.reset();
-                this.y = -50;
-            }
+            if (this.y > canvas.height + 40) this.init();
         }
-        
         draw() {
             ctx.save();
             ctx.translate(this.x, this.y);
-            ctx.rotate(this.rotation);
-            ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${this.opacity})`;
-            ctx.font = `bold ${this.fontSize}px 'Courier New', monospace`;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.8)`;
-            ctx.fillText(this.snippet, 0, 0);
+            ctx.rotate(this.rot);
+            ctx.font = `bold ${this.size}px 'Courier New', monospace`;
+            // NO shadowBlur — it's extremely expensive on GPU
+            ctx.fillStyle = this.color + this.opacity + ')';
+            ctx.fillText(this.text, 0, 0);
             ctx.restore();
         }
     }
-    
-    // Create more particles for denser effect
-    const particleCount = prefersReducedMotion ? 30 : 72;
-    const particles = [];
-    for (let i = 0; i < particleCount; i++) {
-        particles.push(new CodeParticle());
-    }
-    
-    // Animation loop
-    let canvasAnimationId = null;
 
+    const COUNT = prefersReducedMotion ? 18 : 40;   // was 72 — halved for perf
+    const particles = Array.from({ length: COUNT }, () => new Particle());
+
+    let rafId = null;
     function animate() {
-        // Very subtle fade effect to maintain glow without visible trail
-        ctx.fillStyle = 'rgba(5, 7, 13, 0.35)';
+        ctx.fillStyle = 'rgba(5,7,13,0.38)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Update and draw falling code
-        particles.forEach(particle => {
-            particle.update();
-            particle.draw();
-        });
-        
-        canvasAnimationId = requestAnimationFrame(animate);
-    }
-
-    function startCanvasAnimation() {
-        if (canvasAnimationId === null) {
-            animate();
-        }
-    }
-
-    function stopCanvasAnimation() {
-        if (canvasAnimationId !== null) {
-            cancelAnimationFrame(canvasAnimationId);
-            canvasAnimationId = null;
-        }
+        for (const p of particles) { p.update(); p.draw(); }
+        rafId = requestAnimationFrame(animate);
     }
 
     document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            stopCanvasAnimation();
-        } else {
-            startCanvasAnimation();
-        }
+        if (document.hidden) { cancelAnimationFrame(rafId); rafId = null; }
+        else if (!rafId) animate();
     });
-
-    startCanvasAnimation();
+    animate();
 })();
 
 // ===============================================
@@ -204,16 +130,14 @@
 // ===============================================
 
 const hamburger = document.querySelector('.hamburger');
-const navMenu = document.querySelector('.nav-menu');
-const navLinks = document.querySelectorAll('.nav-link');
+const navMenu   = document.querySelector('.nav-menu');
+const navLinks  = document.querySelectorAll('.nav-link');
 
-// Toggle mobile menu
 hamburger.addEventListener('click', () => {
     hamburger.classList.toggle('active');
     navMenu.classList.toggle('active');
 });
 
-// Close mobile menu when clicking on a link
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
         hamburger.classList.remove('active');
@@ -222,336 +146,220 @@ navLinks.forEach(link => {
 });
 
 // ===============================================
-// NAVBAR BACKGROUND ON SCROLL
+// SCROLL ORCHESTRATOR — single rAF for all scroll work
 // ===============================================
 
-const navbar = document.querySelector('.navbar');
-const heroContent = document.querySelector('.hero-content');
-const sections = Array.from(document.querySelectorAll('section'));
-let scrollTopBtn = null;
-let sectionPositions = [];
+const navbar       = document.querySelector('.navbar');
+const heroContent  = document.querySelector('.hero-content');
+const sections     = Array.from(document.querySelectorAll('section'));
+let scrollTopBtn   = null;
+let sectionPos     = [];
 
-// Scroll progress indicator
-const scrollProgress = document.createElement('div');
-scrollProgress.className = 'scroll-progress';
-document.body.appendChild(scrollProgress);
+// Scroll-progress bar
+const scrollBar = document.createElement('div');
+scrollBar.className = 'scroll-progress';
+document.body.appendChild(scrollBar);
 
-function updateScrollProgress(scrollTop = window.scrollY || window.pageYOffset) {
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    scrollProgress.style.width = `${progress}%`;
+function measureSections() {
+    sectionPos = sections.map(s => ({ id: s.getAttribute('id'), top: s.offsetTop - 120 }));
 }
 
-function updateNavbarStyles(scrollTop = window.scrollY || window.pageYOffset) {
-    if (scrollTop > 100) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.15)';
-        navbar.style.backdropFilter = 'blur(25px) saturate(180%)';
-        navbar.style.boxShadow = '0 8px 32px 0 rgba(37, 99, 235, 0.2)';
-    } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.1)';
-        navbar.style.backdropFilter = 'blur(20px) saturate(180%)';
-        navbar.style.boxShadow = '0 8px 32px 0 rgba(37, 99, 235, 0.18)';
-    }
-}
-
-function measureSectionPositions() {
-    sectionPositions = sections.map(section => ({
-        id: section.getAttribute('id'),
-        top: section.offsetTop - 120
-    }));
-}
-
-function updateActiveNav(scrollTop = window.scrollY || window.pageYOffset) {
-    let current = sectionPositions[0]?.id || '';
-
-    sectionPositions.forEach(section => {
-        if (scrollTop >= section.top) {
-            current = section.id;
-        }
-    });
-
-    navLinks.forEach(link => {
-        link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
-    });
-}
-
-function updateHeroParallax(scrollTop = window.scrollY || window.pageYOffset) {
-    if (!heroContent) return;
-    const shift = Math.min(scrollTop * 0.12, 72);
-    const fade = Math.max(0.72, 1 - scrollTop / 900);
-    heroContent.style.transform = `translate3d(0, ${shift}px, 0)`;
-    heroContent.style.opacity = fade.toFixed(3);
-}
-
-let scrollTicking = false;
-function handleScroll() {
-    if (scrollTicking) return;
-
-    scrollTicking = true;
+let ticking = false;
+function onScroll() {
+    if (ticking) return;
+    ticking = true;
     requestAnimationFrame(() => {
-        const scrollTop = window.scrollY || window.pageYOffset;
-        updateNavbarStyles(scrollTop);
-        updateScrollProgress(scrollTop);
-        updateActiveNav(scrollTop);
-        updateHeroParallax(scrollTop);
+        const sy = window.scrollY;
 
-        if (scrollTopBtn) {
-            scrollTopBtn.style.display = scrollTop > 300 ? 'flex' : 'none';
+        // Navbar glass intensity
+        const glassAmount = Math.min(sy / 120, 1);
+        navbar.style.background = `rgba(255,255,255,${0.08 + glassAmount * 0.10})`;
+        navbar.style.boxShadow  = glassAmount > 0.4 ? '0 8px 32px rgba(37,99,235,0.18)' : 'none';
+
+        // Scroll progress bar — width only, GPU-cheap
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        scrollBar.style.width = (max > 0 ? (sy / max) * 100 : 0) + '%';
+
+        // Active nav link
+        let current = sectionPos[0]?.id || '';
+        for (const s of sectionPos) { if (sy >= s.top) current = s.id; }
+        navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${current}`));
+
+        // Hero parallax — composited translate3d only (no opacity change = no repaint)
+        if (heroContent) {
+            const shift = Math.min(sy * 0.14, 80);
+            heroContent.style.transform = `translate3d(0,${shift}px,0)`;
+            // Fade hero text gently
+            heroContent.style.opacity = Math.max(0, 1 - sy / 700).toFixed(3);
         }
 
-        scrollTicking = false;
+        // Scroll-to-top button
+        if (scrollTopBtn) scrollTopBtn.style.opacity = sy > 280 ? '1' : '0';
+
+        ticking = false;
     });
 }
 
-window.addEventListener('scroll', handleScroll, { passive: true });
+window.addEventListener('scroll', onScroll, { passive: true });
 window.addEventListener('resize', () => {
-    measureSectionPositions();
-    updateScrollProgress();
-    updateActiveNav();
+    measureSections();
+    onScroll();
 }, { passive: true });
 
-measureSectionPositions();
-updateNavbarStyles();
-updateScrollProgress();
-updateActiveNav();
-updateHeroParallax();
+measureSections();
+onScroll();
 
 // ===============================================
-// SMOOTH SCROLLING FOR NAVIGATION LINKS
+// SMOOTH ANCHOR SCROLLING
 // ===============================================
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (!target) return;
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            const offsetTop = target.offsetTop - 70;
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
-        }
+        window.scrollTo({ top: target.offsetTop - 70, behavior: 'smooth' });
     });
 });
 
 // ===============================================
-// ACTIVE NAVIGATION LINK ON SCROLL
+// INTERSECTION OBSERVER — REVEAL ON SCROLL
 // ===============================================
 
-// ===============================================
-// SCROLL REVEAL ANIMATION
-// ===============================================
-
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
-};
-
-const observer = new IntersectionObserver((entries, obs) => {
+const revealObs = new IntersectionObserver((entries, obs) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('in-view');
             obs.unobserve(entry.target);
         }
     });
-}, observerOptions);
+}, { threshold: 0.08, rootMargin: '0px 0px -80px 0px' });
 
-// Observe elements for animation
-const animateElements = document.querySelectorAll('.section-title, .about-content, .skill-category, .timeline-item, .project-card, .contact-content > *, .footer-section');
-animateElements.forEach((el, index) => {
-    el.classList.add('reveal');
-    el.style.transitionDelay = `${Math.min(420, (index % 6) * 70)}ms`;
-    observer.observe(el);
-});
+document.querySelectorAll('.section-title, .about-content, .skill-category, .timeline-item, .project-card, .contact-content > *, .footer-section')
+    .forEach((el, i) => {
+        el.classList.add('reveal');
+        el.style.transitionDelay = `${Math.min(360, (i % 5) * 72)}ms`;
+        revealObs.observe(el);
+    });
 
-// Subtle 3D tilt animation for cards on desktop
+// ===============================================
+// SUBTLE TILT — CSS custom property approach (no JS per frame)
+// ===============================================
 if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    const tiltCards = document.querySelectorAll('.project-card, .skill-category, .timeline-content');
-
-    tiltCards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const rotateY = ((x / rect.width) - 0.5) * 8;
-            const rotateX = ((y / rect.height) - 0.5) * -8;
-
-            card.style.transform = `perspective(900px) translateY(-6px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+    document.querySelectorAll('.project-card, .skill-category').forEach(card => {
+        card.addEventListener('mouseenter', () => card.classList.add('tilt-active'));
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            const rx = ((e.clientY - r.top)  / r.height - 0.5) * -6;
+            const ry = ((e.clientX - r.left) / r.width  - 0.5) *  6;
+            card.style.setProperty('--rx', rx.toFixed(1) + 'deg');
+            card.style.setProperty('--ry', ry.toFixed(1) + 'deg');
         });
-
         card.addEventListener('mouseleave', () => {
-            card.style.transform = '';
+            card.classList.remove('tilt-active');
+            card.style.removeProperty('--rx');
+            card.style.removeProperty('--ry');
         });
     });
 }
 
 // ===============================================
-// TYPING EFFECT FOR HERO SUBTITLE
+// TYPING EFFECT — HERO SUBTITLE
 // ===============================================
 
-const subtitleElement = document.querySelector('.hero-subtitle');
-const subtitles = [
-    'Full Stack Developer',
-    'CSE Student @PEC',
-    'Problem Solver'
-];
+const subtitleEl = document.querySelector('.hero-subtitle');
+const subtitles  = ['Full Stack Developer', 'CSE Student @PEC', 'Problem Solver', 'Open Source Contributor'];
+let si = 0, ci = 0, deleting = false, delay = 100;
 
-let subtitleIndex = 0;
-let charIndex = 0;
-let isDeleting = false;
-let typingDelay = 100;
+function type() {
+    const cur = subtitles[si];
+    subtitleEl.textContent = deleting
+        ? cur.substring(0, --ci)
+        : cur.substring(0, ++ci);
 
-function typeSubtitle() {
-    const currentSubtitle = subtitles[subtitleIndex];
-    
-    if (isDeleting) {
-        subtitleElement.textContent = currentSubtitle.substring(0, charIndex - 1);
-        charIndex--;
-        typingDelay = 50;
-    } else {
-        subtitleElement.textContent = currentSubtitle.substring(0, charIndex + 1);
-        charIndex++;
-        typingDelay = 100;
-    }
-
-    if (!isDeleting && charIndex === currentSubtitle.length) {
-        typingDelay = 2000;
-        isDeleting = true;
-    } else if (isDeleting && charIndex === 0) {
-        isDeleting = false;
-        subtitleIndex = (subtitleIndex + 1) % subtitles.length;
-        typingDelay = 500;
-    }
-
-    setTimeout(typeSubtitle, typingDelay);
+    delay = deleting ? 45 : 105;
+    if (!deleting && ci === cur.length) { delay = 2200; deleting = true; }
+    else if (deleting && ci === 0) { deleting = false; si = (si + 1) % subtitles.length; delay = 450; }
+    setTimeout(type, delay);
 }
-
-// Start typing effect after page load
-window.addEventListener('load', () => {
-    setTimeout(typeSubtitle, 1000);
-});
+window.addEventListener('load', () => setTimeout(type, 900));
 
 // ===============================================
-// CONTACT FORM HANDLING
+// CONTACT FORM
 // ===============================================
 
 const contactForm = document.getElementById('contactForm');
-
-contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', e => {
     e.preventDefault();
-    
-    // Get form values
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
+    const name    = document.getElementById('name').value;
+    const email   = document.getElementById('email').value;
     const subject = document.getElementById('subject').value;
     const message = document.getElementById('message').value;
-    
-    // Create mailto link
-    const mailtoLink = `mailto:keshavpec24@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
-    
-    // Open email client
-    window.location.href = mailtoLink;
-    
-    // Show success message
-    alert('Thank you for your message! Your email client will open shortly.');
-    
-    // Reset form
+    const mailto  = `mailto:keshavpec24@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
+    window.location.href = mailto;
     contactForm.reset();
 });
 
 // ===============================================
-// SKILL TAGS ANIMATION
+// SCROLL-TO-TOP BUTTON
 // ===============================================
 
-const skillTags = document.querySelectorAll('.skill-tag');
-
-skillTags.forEach((tag, index) => {
-    tag.style.animationDelay = `${index * 0.1}s`;
-});
-
-// ===============================================
-// SCROLL TO TOP BUTTON
-// ===============================================
-
-// Create scroll to top button
 scrollTopBtn = document.createElement('button');
 scrollTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
 scrollTopBtn.className = 'scroll-top-btn';
-scrollTopBtn.style.cssText = `
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #2563eb, #0f172a);
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    z-index: 999;
-    transition: all 0.3s ease;
-`;
+scrollTopBtn.setAttribute('aria-label', 'Back to top');
 document.body.appendChild(scrollTopBtn);
 
-// Scroll to top on click
-scrollTopBtn.addEventListener('click', () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-});
-
-// Hover effect for scroll top button
-scrollTopBtn.addEventListener('mouseenter', () => {
-    scrollTopBtn.style.transform = 'translateY(-5px)';
-});
-
-scrollTopBtn.addEventListener('mouseleave', () => {
-    scrollTopBtn.style.transform = 'translateY(0)';
-});
+scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
 // ===============================================
-// PARTICLE BACKGROUND EFFECT (OPTIONAL)
+// PARALLAX FALLBACK (Firefox & older browsers)
+// Uses JS only when CSS scroll-driven is unsupported
 // ===============================================
 
-function createParticles() {
-    const hero = document.querySelector('.hero');
-    const particleCount = 50;
-    
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.cssText = `
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            animation: float-particle ${5 + Math.random() * 10}s linear infinite;
-            animation-delay: ${Math.random() * 5}s;
-        `;
-        hero.appendChild(particle);
-    }
-    
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes float-particle {
-            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
-            10%, 90% { opacity: 1; }
-            50% { transform: translateY(-100px) translateX(${Math.random() * 100 - 50}px); }
+if (!CSS.supports('(animation-timeline: scroll()) and (animation-range: 0%)')) {
+    const wrapper = document.querySelector('.parallax-wrapper');
+    const layers  = document.querySelectorAll('.parallax-layer');
+    if (wrapper && layers.length) {
+        const depthValues = [0.12, 0.28, 0.48]; // match data-depth attrs
+
+        let parallaxTicking = false;
+        function updateParallax() {
+            const sy = window.scrollY;
+            const rect = wrapper.getBoundingClientRect();
+            const wrapperTop = rect.top + sy;
+            const wrapperH = wrapper.offsetHeight;
+            const winH = window.innerHeight;
+
+            if (sy >= wrapperTop - winH && sy <= wrapperTop + wrapperH) {
+                const progress = (sy - (wrapperTop - winH)) / (wrapperH + winH);
+                layers.forEach((layer, i) => {
+                    const maxPx = depthValues[i] * 160;
+                    const ty = maxPx * (0.5 - progress);
+                    layer.style.transform = `translateY(${ty.toFixed(2)}px)`;
+                });
+            }
         }
-    `;
-    document.head.appendChild(style);
+
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    window.addEventListener('scroll', onParallaxScroll, { passive: true });
+                } else {
+                    window.removeEventListener('scroll', onParallaxScroll);
+                }
+            });
+        }, { threshold: 0 });
+
+        function onParallaxScroll() {
+            if (parallaxTicking) return;
+            parallaxTicking = true;
+            requestAnimationFrame(() => { updateParallax(); parallaxTicking = false; });
+        }
+
+        obs.observe(wrapper);
+        updateParallax();
+    }
 }
 
-// Uncomment to enable particles
-// createParticles();
-
-console.log('%c🚀 Portfolio loaded successfully!', 'color: #4a90e2; font-size: 16px; font-weight: bold;');
+console.log('%c🚀 Portfolio loaded!', 'color:#2563eb;font-size:14px;font-weight:700;');
