@@ -331,7 +331,7 @@ const revealObs = new IntersectionObserver(
 
 document
   .querySelectorAll(
-    ".section-title, .about-content, .skill-category, .timeline-item, .project-card, .contact-content > *",
+    ".section-title, .about-content, .skill-category, .experience-item, .project-card, .contact-content > *",
   )
   .forEach((el, i) => {
     el.classList.add("reveal");
@@ -343,26 +343,31 @@ document
 // SUBTLE TILT — CSS custom property approach (no JS per frame)
 // ===============================================
 if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-  document
-    .querySelectorAll(".project-card, .skill-category")
-    .forEach((card) => {
-      card.addEventListener("mouseenter", () =>
-        card.classList.add("tilt-active"),
-      );
-      card.addEventListener("mousemove", (e) => {
-        const r = card.getBoundingClientRect();
-        const rx = ((e.clientY - r.top) / r.height - 0.5) * -6;
-        const ry = ((e.clientX - r.left) / r.width - 0.5) * 6;
-        card.style.setProperty("--rx", rx.toFixed(1) + "deg");
-        card.style.setProperty("--ry", ry.toFixed(1) + "deg");
-      });
-      card.addEventListener("mouseleave", () => {
-        card.classList.remove("tilt-active");
-        card.style.removeProperty("--rx");
-        card.style.removeProperty("--ry");
-      });
+  document.querySelectorAll(".project-card").forEach((card) => {
+    card.addEventListener("mouseenter", () =>
+      card.classList.add("tilt-active"),
+    );
+    card.addEventListener("mousemove", (e) => {
+      const r = card.getBoundingClientRect();
+      const rx = ((e.clientY - r.top) / r.height - 0.5) * -6;
+      const ry = ((e.clientX - r.left) / r.width - 0.5) * 6;
+      card.style.setProperty("--rx", rx.toFixed(1) + "deg");
+      card.style.setProperty("--ry", ry.toFixed(1) + "deg");
     });
+    card.addEventListener("mouseleave", () => {
+      card.classList.remove("tilt-active");
+      card.style.removeProperty("--rx");
+      card.style.removeProperty("--ry");
+    });
+  });
 }
+
+// Flip logic for skill cards (click to lock flipped state)
+document.querySelectorAll(".skill-category").forEach((card) => {
+  card.addEventListener("click", () => {
+    card.classList.toggle("flipped");
+  });
+});
 
 // ===============================================
 // TYPING EFFECT — HERO SUBTITLE
