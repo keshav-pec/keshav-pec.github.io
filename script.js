@@ -114,32 +114,34 @@
   );
 
   const snippets = [
-    "{ }",
-    "[ ]",
     "< />",
-    "( )",
-    "=>",
-    "===",
-    "!==",
+    "</br>",
     "const",
-    "let",
     "async",
     "await",
     "class",
     "return",
     "import",
-    "React",
-    "Node",
+    "React.js",
+    "Node.js",
+    "Java",
     "MongoDB",
-    "JS",
-    "CSS",
-    "HTML",
-    "map()",
+    "GenAI",
+    "VectorDB",
+    "TailwindCSS",
+    "WebRTC",
+    "Docker",
+    "GitHub",
+    "int[n]",
+    "ArrayList<Integer>",
+    "for(int i=0;...)",
+    "HashMap<>()",
+    "HashSet<>",
+    "StringBuilder()",
+    "PriorityQueue<>",
     "filter()",
     "useState",
     "&&",
-    "||",
-    "...",
   ];
   // Pre-compute rgba strings — no object spread per frame
   const colorsRgba = [
@@ -456,7 +458,7 @@ if (!CSS.supports("(animation-timeline: scroll()) and (animation-range: 0%)")) {
   const wrapper = document.querySelector(".parallax-wrapper");
   const layers = document.querySelectorAll(".parallax-layer");
   if (wrapper && layers.length) {
-    const depthValues = [0.12, 0.28, 0.48]; // match data-depth attrs
+    const depthValues = [0.12, 0.28]; // match data-depth attrs
 
     let parallaxTicking = false;
     function updateParallax() {
