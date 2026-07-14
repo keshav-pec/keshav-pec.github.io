@@ -316,32 +316,6 @@ document.querySelectorAll('a[href^="#"]').forEach((a) => {
 });
 
 // ===============================================
-// INTERSECTION OBSERVER — REVEAL ON SCROLL
-// ===============================================
-
-const revealObs = new IntersectionObserver(
-  (entries, obs) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("in-view");
-        obs.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.08, rootMargin: "0px 0px -80px 0px" },
-);
-
-document
-  .querySelectorAll(
-    ".section-title, .about-content, .skill-category, .experience-item, .project-card, .contact-content > *",
-  )
-  .forEach((el, i) => {
-    el.classList.add("reveal");
-    el.style.transitionDelay = `${Math.min(360, (i % 5) * 72)}ms`;
-    revealObs.observe(el);
-  });
-
-// ===============================================
 // SUBTLE TILT — CSS custom property approach (no JS per frame)
 // ===============================================
 if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {

@@ -1,150 +1,109 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Keshav Goyal – Full Stack Developer & CSE Student at PEC Chandigarh. Building scalable web apps, AI systems, and open source software."
-    />
-    <title>Keshav Goyal | Full Stack Developer & CSE @ PEC</title>
-    <link
-      rel="icon"
-      href="https://cdn3d.iconscout.com/3d/free/thumb/free-user-account-3d-icon-png-download-4715753.png"
-      type="image/png"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    />
-    <link rel="stylesheet" href="styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-  </head>
 
-  <body>
-    <!-- Full Page Canvas Background -->
-    <canvas id="codeCanvas"></canvas>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Keshav Goyal – Full Stack Developer & CSE Student at PEC Chandigarh. Building scalable web apps, AI systems, and open source software." />
+  <title>Keshav Goyal | Full Stack Developer & CSE @ PEC</title>
+  <link rel="icon" href="https://cdn3d.iconscout.com/3d/free/thumb/free-user-account-3d-icon-png-download-4715753.png"
+    type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
 
-    <!-- Navigation -->
-    <nav class="navbar">
-      <div class="container">
-        <div class="nav-brand">
-          <a href="#home">
-            <span class="brand-icon">K</span>
-            <span class="brand-text">Keshav Goyal</span>
-          </a>
-        </div>
-        <ul class="nav-menu">
-          <li>
-            <a href="#home" class="nav-link"
-              ><i class="fas fa-home"></i> Home</a
-            >
-          </li>
-          <li>
-            <a href="#about" class="nav-link"
-              ><i class="fas fa-user"></i> About</a
-            >
-          </li>
-          <li>
-            <a href="#skills" class="nav-link"
-              ><i class="fas fa-code"></i> Skills</a
-            >
-          </li>
-          <li>
-            <a href="#experience" class="nav-link"
-              ><i class="fas fa-briefcase"></i> Experience</a
-            >
-          </li>
-          <li>
-            <a href="#projects" class="nav-link"
-              ><i class="fas fa-project-diagram"></i> Projects</a
-            >
-          </li>
-          <li>
-            <a href="#contact" class="nav-link"
-              ><i class="fas fa-envelope"></i> Contact</a
-            >
-          </li>
-        </ul>
-        <div class="nav-actions">
-          <a
-            href="https://github.com/keshav-pec"
-            target="_blank"
-            class="nav-social"
-            aria-label="GitHub"
-          >
-            <i class="fab fa-github"></i>
-          </a>
-          <a
-            href="https://www.linkedin.com/in/keshavgoyalpec/"
-            target="_blank"
-            class="nav-social"
-            aria-label="LinkedIn"
-          >
-            <i class="fab fa-linkedin"></i>
-          </a>
-          <a href="#contact" class="btn-nav">Hire Me</a>
-        </div>
-        <div class="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+<body>
+  <!-- Full Page Canvas Background -->
+  <canvas id="codeCanvas"></canvas>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-brand">
+        <a href="#home">
+          <span class="brand-icon">K</span>
+          <span class="brand-text">Keshav Goyal</span>
+        </a>
       </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-      <!-- Parallax depth layers (CSS scroll-driven, JS fallback) -->
-      <div class="parallax-wrapper" aria-hidden="true">
-        <div class="parallax-layer" data-depth="0.12"></div>
-        <div class="parallax-layer" data-depth="0.28"></div>
+      <ul class="nav-menu">
+        <li>
+          <a href="#home" class="nav-link"><i class="fas fa-home"></i> Home</a>
+        </li>
+        <li>
+          <a href="#about" class="nav-link"><i class="fas fa-user"></i> About</a>
+        </li>
+        <li>
+          <a href="#skills" class="nav-link"><i class="fas fa-code"></i> Skills</a>
+        </li>
+        <li>
+          <a href="#projects" class="nav-link"><i class="fas fa-project-diagram"></i> Projects</a>
+        </li>
+        <li>
+          <a href="#experience" class="nav-link"><i class="fas fa-briefcase"></i> Experience</a>
+        </li>
+        <li>
+          <a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+        </li>
+      </ul>
+      <div class="nav-actions">
+        <a href="https://github.com/keshav-pec" target="_blank" class="nav-social" aria-label="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/keshavgoyalpec/" target="_blank" class="nav-social" aria-label="LinkedIn">
+          <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="#contact" class="btn-nav">Hire Me</a>
       </div>
-      <div class="container">
-        <div class="hero-content">
-          <div class="hero-text">
-            <h1 class="hero-title">
-              Hi, I'm <span class="highlight">Keshav Goyal</span>
-            </h1>
-            <p class="hero-subtitle">
-              Full Stack Developer | CSE Student @PEC | Problem Solver
-            </p>
-            <p class="hero-description">
-              Passionate about building scalable web applications, Agentic AI
-              workflows, and creating seamless user experiences with modern
-              technologies.
-            </p>
-          </div>
-          <div class="hero-image">
-            <div class="image-wrapper">
-              <img
-                src="images/ProfilePic.png"
-                alt="Keshav Goyal"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <!-- Parallax depth layers (CSS scroll-driven, JS fallback) -->
+    <div class="parallax-wrapper" aria-hidden="true">
+      <div class="parallax-layer" data-depth="0.12"></div>
+      <div class="parallax-layer" data-depth="0.28"></div>
+    </div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">
+            Hi, I'm <span class="highlight">Keshav Goyal</span>
+          </h1>
+          <p class="hero-subtitle">
+            Full Stack Developer | CSE Student @PEC | Problem Solver
+          </p>
+          <p class="hero-description">
+            Passionate about building scalable web applications, Agentic AI
+            workflows, and creating seamless user experiences with modern
+            technologies.
+          </p>
+        </div>
+        <div class="hero-image">
+          <div class="image-wrapper">
+            <img src="images/ProfilePic.png" alt="Keshav Goyal" loading="lazy" decoding="async" />
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- About Section -->
-    <section id="about" class="about">
-      <div class="container">
-        <h2 class="section-title">About Me</h2>
-        <div class="about-content">
-          <div class="about-code-window">
-            <div class="mac-titlebar">
-              <span class="mac-dot red"></span>
-              <span class="mac-dot yellow"></span>
-              <span class="mac-dot green"></span>
-            </div>
+  <!-- About Section -->
+  <section id="about" class="about">
+    <div class="container">
+      <h2 class="section-title">About Me</h2>
+      <div class="about-content">
+        <div class="about-code-window">
+          <div class="ide-body">
             <div class="code-content">
               <pre><code><span class="json-punctuation">{</span>
   <span class="json-key">"location"</span><span class="json-punctuation">:</span> <span class="json-string">"Patiala, Punjab, India"</span><span class="json-punctuation">,</span>
@@ -158,406 +117,342 @@
     <span class="json-key">"name"</span><span class="json-punctuation">:</span> <span class="json-string">"DAV Public School, Patiala"</span><span class="json-punctuation">,</span>
     <span class="json-key">"class_XII"</span><span class="json-punctuation">:</span> <span class="json-string">"89.4%"</span><span class="json-punctuation">,</span>
     <span class="json-key">"class_X"</span><span class="json-punctuation">:</span> <span class="json-string">"97.2%"</span>
-  <span class="json-punctuation">}</span>
+  <span class="json-punctuation">}</span><span class="json-punctuation">,</span>
 <span class="json-punctuation">}</span></code></pre>
             </div>
-          </div>
-          <div class="resume-download-wrapper">
-            <div class="resume-card">
-              <div class="resume-icon">
-                <i class="fas fa-file-lines"></i>
-              </div>
-              <div class="resume-info">
-                <h3>My Resume</h3>
-                <p>Click below to open my latest resume</p>
-              </div>
-              <a
-                href="resume/Resume.pdf"
-                target="_blank"
-                class="btn btn-primary resume-btn"
-              >
-                <i class="fas fa-external-link-alt"></i> Open Resume
+            <div class="resume-icon-container">
+              <a href="resume/Resume.pdf" target="_blank" class="resume-icon-box" title="Open Latest Resume">
+                <div class="resume-icon">
+                  <i class="fas fa-file-pdf"></i>
+                </div>
+                <p>View Resume</p>
               </a>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Skills Section -->
-    <section id="skills" class="skills">
-      <div class="container">
-        <h2 class="section-title">Skills & Technologies</h2>
-        <div class="skills-grid">
-          <div class="skill-category">
-            <div class="skill-card-inner">
-              <div class="skill-card-front">
-                <h3>
-                  <i class="fas fa-laptop-code"></i> Programming Languages
-                </h3>
-              </div>
-              <div class="skill-card-back">
-                <div class="skill-tags">
-                  <span class="skill-tag">Java</span>
-                  <span class="skill-tag">C++</span>
-                  <span class="skill-tag">Python</span>
-                  <span class="skill-tag">JavaScript</span>
-                  <span class="skill-tag">Kotlin</span>
-                </div>
+  <!-- Skills Section -->
+  <section id="skills" class="skills">
+    <div class="container">
+      <h2 class="section-title">Skills & Technologies</h2>
+      <div class="skills-grid">
+        <div class="skill-category">
+          <div class="skill-card-inner">
+            <div class="skill-card-front">
+              <h3>
+                <i class="fas fa-laptop-code"></i> Programming Languages
+              </h3>
+            </div>
+            <div class="skill-card-back">
+              <div class="skill-tags">
+                <span class="skill-tag">Java</span>
+                <span class="skill-tag">C++</span>
+                <span class="skill-tag">Python</span>
+                <span class="skill-tag">JavaScript</span>
+                <span class="skill-tag">Kotlin</span>
               </div>
             </div>
           </div>
-          <div class="skill-category">
-            <div class="skill-card-inner">
-              <div class="skill-card-front">
-                <h3><i class="fas fa-globe"></i> Web Development</h3>
-              </div>
-              <div class="skill-card-back">
-                <div class="skill-tags">
-                  <span class="skill-tag">MERN Stack</span>
-                  <span class="skill-tag">MVC Framework</span>
-                  <span class="skill-tag">REST APIs</span>
-                  <span class="skill-tag">MongoDB</span>
-                  <span class="skill-tag">Tailwind CSS</span>
-                  <span class="skill-tag">Manifest V3</span>
-                </div>
+        </div>
+        <div class="skill-category">
+          <div class="skill-card-inner">
+            <div class="skill-card-front">
+              <h3><i class="fas fa-globe"></i> Web Development</h3>
+            </div>
+            <div class="skill-card-back">
+              <div class="skill-tags">
+                <span class="skill-tag">MERN Stack</span>
+                <span class="skill-tag">REST APIs</span>
+                <span class="skill-tag">MongoDB</span>
+                <span class="skill-tag">Tailwind CSS</span>
+                <span class="skill-tag">WebRTC</span>
+                <span class="skill-tag">Streamlit</span>
+                <span class="skill-tag">Manifest V3</span>
+                <span class="skill-tag">GenAI</span>
               </div>
             </div>
           </div>
-          <div class="skill-category">
-            <div class="skill-card-inner">
-              <div class="skill-card-front">
-                <h3><i class="fas fa-brain"></i> CS Fundamentals</h3>
-              </div>
-              <div class="skill-card-back">
-                <div class="skill-tags">
-                  <span class="skill-tag"
-                    >Data Structures &amp; Algorithms</span
-                  >
-                  <span class="skill-tag">Object Oriented Programming</span>
-                  <span class="skill-tag">Operating Systems</span>
-                  <span class="skill-tag">Computer Networks</span>
-                  <span class="skill-tag">AI / ML</span>
-                </div>
+        </div>
+        <div class="skill-category">
+          <div class="skill-card-inner">
+            <div class="skill-card-front">
+              <h3><i class="fas fa-brain"></i> CS Fundamentals</h3>
+            </div>
+            <div class="skill-card-back">
+              <div class="skill-tags">
+                <span class="skill-tag">Data Structures &amp; Algorithms</span>
+                <span class="skill-tag">Object Oriented Programming</span>
+                <span class="skill-tag">Operating Systems</span>
+                <span class="skill-tag">Computer Networks</span>
+                <span class="skill-tag">AI / ML</span>
               </div>
             </div>
           </div>
-          <div class="skill-category">
-            <div class="skill-card-inner">
-              <div class="skill-card-front">
-                <h3><i class="fas fa-tools"></i> Tools &amp; Technologies</h3>
-              </div>
-              <div class="skill-card-back">
-                <div class="skill-tags">
-                  <span class="skill-tag">Git and GitHub</span>
-                  <span class="skill-tag">GenAI</span>
-                  <span class="skill-tag">Google Webspace APIs</span>
-                  <span class="skill-tag">Cloud Scheduler</span>
-                </div>
+        </div>
+        <div class="skill-category">
+          <div class="skill-card-inner">
+            <div class="skill-card-front">
+              <h3><i class="fas fa-tools"></i> Tools &amp; Technologies</h3>
+            </div>
+            <div class="skill-card-back">
+              <div class="skill-tags">
+                <span class="skill-tag">Git and GitHub</span>
+                <span class="skill-tag">VS Code</span>
+                <span class="skill-tag">Docker</span>
+                <span class="skill-tag">Hoppscotch</span>
+                <span class="skill-tag">GCP</span>
               </div>
             </div>
           </div>
-          <div class="skill-category">
-            <div class="skill-card-inner">
-              <div class="skill-card-front">
-                <h3><i class="fas fa-trophy"></i> Competitive Programming</h3>
-              </div>
-              <div class="skill-card-back">
-                <div class="skill-tags">
-                  <span class="skill-tag">Problem Solving in Java</span>
-                  <span class="skill-tag">CodeChef ⭐⭐⭐ (3-Star)</span>
-                  <span class="skill-tag">Codeforces Pupil</span>
-                </div>
+        </div>
+        <div class="skill-category">
+          <div class="skill-card-inner">
+            <div class="skill-card-front">
+              <h3><i class="fas fa-trophy"></i> Competitive Programming</h3>
+            </div>
+            <div class="skill-card-back">
+              <div class="skill-tags">
+                <span class="skill-tag">Problem Solving in Java</span>
+                <span class="skill-tag">CodeChef ⭐⭐⭐ (3-Star)</span>
+                <span class="skill-tag">Codeforces Specialist</span>
+                <span class="skill-tag">Leetcode (1700+)</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Experience Section -->
-    <section id="experience" class="experience">
-      <div class="container">
-        <h2 class="section-title">Experience</h2>
-        <div class="experience-list">
-          <div class="experience-item">
-            <div class="experience-header">
-              <h3>Software Developer Intern</h3>
-              <p class="experience-date">
-                <i class="fas fa-calendar"></i> Jun 2026 - Present
-              </p>
-            </div>
-            <h4>Reagvis Labs</h4>
-            <ul>
-              <li>
-                Contributing to software architecture and collaborating with the
-                development team to build reliable production applications.
-              </li>
-              <li>
-                Working on web architecture while integrating AI/ML services
-                into production workflows.
-              </li>
-            </ul>
-          </div>
-          <div class="experience-item">
-            <div class="experience-header">
-              <h3>Frontend Developer (Freelance)</h3>
-              <p class="experience-date">
-                <i class="fas fa-calendar"></i> Oct 2025 - Nov 2025
-              </p>
-            </div>
-            <h4>Rohindia</h4>
-            <ul>
-              <li>
-                Worked on frontend technologies for production applications
-                including the <strong>CafeLamhey</strong> blogging platform.
-              </li>
-              <li>
-                Implemented responsive UI components, optimized client-side
-                performance, and collaborated with backend developers to
-                integrate REST APIs.
-              </li>
-            </ul>
-          </div>
-          <div class="experience-item">
-            <div class="experience-header">
-              <h3>Open Source Contributor</h3>
-              <p class="experience-date">
-                <i class="fas fa-calendar"></i> Oct 2025
-              </p>
-            </div>
-            <h4>Hacktoberfest</h4>
-            <ul>
-              <li>
-                Contributed to multiple open-source repositories including
-                <strong>AlgoVisualizer</strong> and <strong>ACM-Fun</strong>.
-              </li>
-              <li>
-                Developed <strong>6+</strong> responsive UI components using
-                React.js, improving usability and interface consistency across
-                applications.
-              </li>
-              <li>
-                Optimized backend APIs and debugging workflows, improving
-                overall system reliability.
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="projects">
-      <div class="container">
-        <h2 class="section-title">Featured Projects</h2>
-        <div class="projects-grid">
-          <!-- LasMinAI -->
-          <div class="project-card">
-            <div class="project-image">
-              <img
-                src="images/LasMinAI.png"
-                alt="LasMinAI"
-                loading="lazy"
-                decoding="async"
-              />
-              <div class="project-overlay">
-                <a
-                  href="https://lasmin-ai-280275748399.asia-south1.run.app"
-                  class="project-link"
-                  target="_blank"
-                  title="Live Demo"
-                  ><i class="fas fa-external-link-alt"></i
-                ></a>
-                <a
-                  href="https://github.com/keshav-pec/LasMinAI"
-                  class="project-link"
-                  target="_blank"
-                  title="GitHub"
-                  ><i class="fab fa-github"></i
-                ></a>
-              </div>
-            </div>
-            <div class="project-info">
-              <h3>LasMinAI - AI Productivity Manager</h3>
-              <p>
-                9 interconnected Agentic AI modules, including conversational
-                task management, autonomous workstation planning, AI reminders,
-                habit automation, voice assistant, browser task extraction, and
-                smart form autofill. Integrated Gemini with Google Calendar,
-                Gmail, Drive, and Cloud Scheduler to automate workflows.
-              </p>
-              <div class="project-tags">
-                <span>MERN</span>
-                <span>GenAI</span>
-                <span>Manifest V3</span>
-                <span>Cloud Scheduler</span>
-                <span>Google Webspace APIs</span>
-              </div>
+  <!-- Projects Section -->
+  <section id="projects" class="projects">
+    <div class="container">
+      <h2 class="section-title">Featured Projects</h2>
+      <div class="projects-grid">
+        <!-- LasMinAI -->
+        <div class="project-card">
+          <div class="project-image">
+            <img src="images/LasMinAI.png" alt="LasMinAI" loading="lazy" decoding="async" />
+            <div class="project-overlay">
+              <a href="https://lasmin-ai-280275748399.asia-south1.run.app" class="project-link" target="_blank"
+                title="Live Demo"><i class="fas fa-external-link-alt"></i></a>
+              <a href="https://github.com/keshav-pec/LasMinAI" class="project-link" target="_blank" title="GitHub"><i
+                  class="fab fa-github"></i></a>
             </div>
           </div>
-          <!-- AI RAG Project -->
-          <div class="project-card">
-            <div class="project-image">
-              <img
-                src="images/RAG_Project.png"
-                alt="AI Knowledge Retrieval System"
-                loading="lazy"
-                decoding="async"
-              />
-              <div class="project-overlay">
-                <a
-                  href="https://github.com/keshav-pec"
-                  class="project-link"
-                  target="_blank"
-                  title="GitHub"
-                  ><i class="fab fa-github"></i
-                ></a>
-              </div>
-            </div>
-            <div class="project-info">
-              <h3>AI Knowledge Retrieval System (RAG)</h3>
-              <p>
-                Built a Retrieval-Augmented Generation system processing 1,000+
-                pages and generating 6,000+ vector embeddings for semantic
-                document search. Engineered FAISS-based retrieval pipeline
-                reducing query latency by ~40%.
-              </p>
-              <div class="project-tags">
-                <span>LangChain</span>
-                <span>FAISS</span>
-                <span>Hugging Face</span>
-                <span>FastAPI</span>
-                <span>Streamlit</span>
-              </div>
-            </div>
-          </div>
-          <!-- NeoSetu -->
-          <div class="project-card">
-            <div class="project-image">
-              <img
-                src="images/Screenshot 2026-03-21 at 17.59.05.png"
-                alt="NeoSetu"
-                loading="lazy"
-                decoding="async"
-              />
-              <div class="project-overlay">
-                <a
-                  href="https://nexmeetv1.vercel.app/"
-                  class="project-link"
-                  target="_blank"
-                  title="Live Demo"
-                  ><i class="fas fa-external-link-alt"></i
-                ></a>
-                <a
-                  href="https://github.com/keshav-pec/NexMeetv1"
-                  class="project-link"
-                  target="_blank"
-                  title="GitHub"
-                  ><i class="fab fa-github"></i
-                ></a>
-              </div>
-            </div>
-            <div class="project-info">
-              <h3>NexMeet – Real-Time Video Conferencing Platform</h3>
-              <p>
-                Full-stack video conferencing platform supporting multiple
-                concurrent users using WebRTC signaling. Features video calls,
-                screen sharing, live chat, and secure authentication with
-                scalable REST APIs and room-based session management.
-              </p>
-              <div class="project-tags">
-                <span>React</span>
-                <span>Node.js</span>
-                <span>WebRTC</span>
-                <span>LiveKit</span>
-                <span>MongoDB</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-      <div class="container">
-        <h2 class="section-title">Get In Touch</h2>
-        <div class="contact-content">
-          <div class="contact-text">
+          <div class="project-info">
+            <h3>LasMinAI - AI Productivity Manager</h3>
             <p>
-              I'm actively seeking internship opportunities for Summer 2027 in
-              full-stack development roles.
-              <br />
-              Open to discussing exciting projects, freelance work, or
-              collaboration opportunities!
+              9 interconnected Agentic AI modules, including conversational
+              task management, autonomous workstation planning, AI reminders,
+              habit automation, voice assistant, browser task extraction, and
+              smart form autofill. Integrated Gemini with Google Calendar,
+              Gmail, Drive, and Cloud Scheduler to automate workflows.
             </p>
-            <div class="contact-item">
-              <i class="fas fa-map-marker-alt"></i>
-              <div class="contact-item-text">
-                <h4>Location</h4>
-                <p>Patiala, Punjab, India</p>
-              </div>
-            </div>
-            <div class="contact-item">
-              <i class="fab fa-linkedin"></i>
-              <div class="contact-item-text">
-                <h4>LinkedIn</h4>
-                <a
-                  href="https://www.linkedin.com/in/keshavgoyalpec/"
-                  target="_blank"
-                  >linkedin.com/in/keshavgoyalpec</a
-                >
-              </div>
+            <div class="project-tags">
+              <span>MERN</span>
+              <span>GenAI</span>
+              <span>Manifest V3</span>
+              <span>Cloud Scheduler</span>
+              <span>Google Webspace APIs</span>
             </div>
           </div>
-          <div class="contact-form">
-            <form id="contactForm">
-              <div class="form-group">
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  placeholder="Your Name"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="Your Email"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  placeholder="Subject"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <textarea
-                  id="message"
-                  name="message"
-                  rows="5"
-                  placeholder="Your Message"
-                  required
-                ></textarea>
-              </div>
-              <button type="submit" class="btn btn-primary">
-                Send Message
-              </button>
-            </form>
+        </div>
+        <!-- NeoSetu -->
+        <div class="project-card">
+          <div class="project-image">
+            <img src="images/Screenshot 2026-03-21 at 17.59.05.png" alt="NeoSetu" loading="lazy" decoding="async" />
+            <div class="project-overlay">
+              <a href="https://nexmeetv1.vercel.app/" class="project-link" target="_blank" title="Live Demo"><i
+                  class="fas fa-external-link-alt"></i></a>
+              <a href="https://github.com/keshav-pec/NexMeetv1" class="project-link" target="_blank" title="GitHub"><i
+                  class="fab fa-github"></i></a>
+            </div>
+          </div>
+          <div class="project-info">
+            <h3>NexMeet – Real-Time Video Conferencing Platform</h3>
+            <p>
+              Full-stack video conferencing platform supporting multiple
+              concurrent users using WebRTC signaling. Features video calls,
+              screen sharing, live chat, and secure authentication with
+              scalable REST APIs and room-based session management.
+            </p>
+            <div class="project-tags">
+              <span>React</span>
+              <span>Node.js</span>
+              <span>WebRTC</span>
+              <span>LiveKit</span>
+              <span>MongoDB</span>
+            </div>
+          </div>
+        </div>
+        <!-- AI RAG Project -->
+        <div class="project-card">
+          <div class="project-image">
+            <img src="images/RAG_Project.png" alt="AI Knowledge Retrieval System" loading="lazy" decoding="async" />
+            <div class="project-overlay">
+              <a href="https://github.com/keshav-pec" class="project-link" target="_blank" title="GitHub"><i
+                  class="fab fa-github"></i></a>
+            </div>
+          </div>
+          <div class="project-info">
+            <h3>AI Knowledge Retrieval System (RAG)</h3>
+            <p>
+              Built a Retrieval-Augmented Generation system processing 1,000+
+              pages and generating 6,000+ vector embeddings for semantic
+              document search. Engineered FAISS-based retrieval pipeline
+              reducing query latency by ~40%.
+            </p>
+            <div class="project-tags">
+              <span>LangChain</span>
+              <span>FAISS</span>
+              <span>Hugging Face</span>
+              <span>FastAPI</span>
+              <span>Streamlit</span>
+            </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <script src="script.js"></script>
-  </body>
+  <!-- Experience Section -->
+  <section id="experience" class="experience">
+    <div class="container">
+      <h2 class="section-title">Experience</h2>
+      <div class="experience-list">
+        <div class="experience-item">
+          <div class="experience-header">
+            <h3>Software Developer Intern</h3>
+            <p class="experience-date">
+              <i class="fas fa-calendar"></i> Jun 2026 - Present
+            </p>
+          </div>
+          <h4>Reagvis Labs</h4>
+          <ul>
+            <li>
+              Contributing to software architecture and collaborating with the
+              development team to build reliable production applications.
+            </li>
+            <li>
+              Working on web architecture while integrating AI/ML services
+              into production workflows.
+            </li>
+          </ul>
+        </div>
+        <div class="experience-item">
+          <div class="experience-header">
+            <h3>Frontend Developer (Freelance)</h3>
+            <p class="experience-date">
+              <i class="fas fa-calendar"></i> Oct 2025 - Nov 2025
+            </p>
+          </div>
+          <h4>Rohindia</h4>
+          <ul>
+            <li>
+              Worked on frontend technologies for production applications
+              including the <strong>CafeLamhey</strong> blogging platform.
+            </li>
+            <li>
+              Implemented responsive UI components, optimized client-side
+              performance, and collaborated with backend developers to
+              integrate REST APIs.
+            </li>
+          </ul>
+        </div>
+        <div class="experience-item">
+          <div class="experience-header">
+            <h3>Open Source Contributor</h3>
+            <p class="experience-date">
+              <i class="fas fa-calendar"></i> Oct 2025
+            </p>
+          </div>
+          <h4>Hacktoberfest</h4>
+          <ul>
+            <li>
+              Contributed to multiple open-source repositories including
+              <strong>AlgoVisualizer</strong> and <strong>ACM-Fun</strong>.
+            </li>
+            <li>
+              Developed <strong>6+</strong> responsive UI components using
+              React.js, improving usability and interface consistency across
+              applications.
+            </li>
+            <li>
+              Optimized backend APIs and debugging workflows, improving
+              overall system reliability.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact">
+    <div class="container">
+      <h2 class="section-title">Get In Touch</h2>
+      <div class="contact-content">
+        <div class="contact-text">
+          <p>
+            I'm actively seeking internship opportunities for Summer 2027 in
+            full-stack development roles.
+            <br />
+            Open to discussing exciting projects, freelance work, or
+            collaboration opportunities!
+          </p>
+          <div class="contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div class="contact-item-text">
+              <h4>Location</h4>
+              <p>Patiala, Punjab, India</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fab fa-linkedin"></i>
+            <div class="contact-item-text">
+              <h4>LinkedIn</h4>
+              <a href="https://www.linkedin.com/in/keshavgoyalpec/" target="_blank">linkedin.com/in/keshavgoyalpec</a>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form">
+          <form id="contactForm">
+            <div class="form-group">
+              <input type="text" id="name" name="name" placeholder="Your Name" required />
+            </div>
+            <div class="form-group">
+              <input type="email" id="email" name="email" placeholder="Your Email" required />
+            </div>
+            <div class="form-group">
+              <input type="text" id="subject" name="subject" placeholder="Subject" required />
+            </div>
+            <div class="form-group">
+              <textarea id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p class="copyright">
+        &copy; 2026 Keshav Goyal. All rights reserved. | Last Updated: July
+        2026
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
 </html>
