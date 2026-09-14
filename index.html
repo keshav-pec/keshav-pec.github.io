@@ -3,456 +3,809 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Keshav Goyal — Full Stack Developer</title>
   <meta name="description"
-    content="Keshav Goyal – Full Stack Developer & CSE Student at PEC Chandigarh. Building scalable web apps, AI systems, and open source software." />
-  <title>Keshav Goyal | Full Stack Developer & CSE @ PEC</title>
-  <link rel="icon" href="https://cdn3d.iconscout.com/3d/free/thumb/free-user-account-3d-icon-png-download-4715753.png"
-    type="image/png" />
+    content="Keshav Goyal — Full Stack Developer and CSE undergraduate at Punjab Engineering College, Chandigarh. MERN, GenAI, WebRTC and cloud-native systems." />
+  <!-- content is kept in sync with the active theme, below and by script.js -->
+  <meta name="theme-color" id="meta-theme-color" content="#eaf0f9" />
+  <meta name="color-scheme" content="light dark" />
+  <!-- Theme must be decided before the stylesheet applies, or the page flashes
+       the wrong palette for a frame. This blocks parsing (deliberately) and
+       runs before the <link rel="stylesheet"> below is even requested. -->
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem("theme");
+        var theme = stored || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+        var m = document.getElementById("meta-theme-color");
+        if (m) m.content = theme === "dark" ? "#05070f" : "#eaf0f9";
+      } catch (e) { }
+    })();
+  </script>
+  <link rel="canonical" href="https://keshav-pec.github.io/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Keshav Goyal — Full Stack Developer" />
+  <meta property="og:description"
+    content="Full Stack Developer and CSE undergraduate at PEC Chandigarh. MERN, GenAI, WebRTC and cloud-native systems." />
+  <meta property="og:url" content="https://keshav-pec.github.io/" />
+  <meta property="og:image" content="https://keshav-pec.github.io/images/opt/profile-760.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232563eb'/><stop offset='.55' stop-color='%231d4ed8'/><stop offset='1' stop-color='%230b1220'/></linearGradient></defs><rect width='32' height='32' rx='9.5' fill='url(%23g)'/><g stroke-width='3.2' stroke-linecap='round' fill='none'><path d='M11 8.5v15' stroke='%23fff'/><path d='M21.6 8.9 12.35 16' stroke='%23fff'/><path d='M12.35 16 21.6 23.1' stroke='%23f5b301'/></g></svg>" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <link rel="preload" as="image" href="images/opt/profile-760.webp"
+    imagesrcset="images/opt/profile-400.webp 400w, images/opt/profile-760.webp 760w"
+    imagesizes="(max-width: 900px) 220px, 340px" fetchpriority="high" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Keshav Goyal",
+    "jobTitle": "Full Stack Developer",
+    "email": "mailto:keshavpec24@gmail.com",
+    "telephone": "+91-7589978904",
+    "url": "https://keshav-pec.github.io/",
+    "alumniOf": "Punjab Engineering College, Chandigarh",
+    "sameAs": [
+      "https://github.com/keshav-pec",
+      "https://www.linkedin.com/in/keshavgoyalpec/"
+    ]
+  }
+  </script>
 </head>
 
 <body>
-  <!-- Full Page Canvas Background -->
-  <canvas id="codeCanvas"></canvas>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Navigation -->
-  <nav class="navbar">
-    <div class="container">
-      <div class="nav-brand">
-        <a href="#home">
-          <span class="brand-icon">K</span>
-          <span class="brand-text">Keshav Goyal</span>
-        </a>
-      </div>
-      <ul class="nav-menu">
-        <li>
-          <a href="#home" class="nav-link"><i class="fas fa-home"></i> Home</a>
-        </li>
-        <li>
-          <a href="#about" class="nav-link"><i class="fas fa-user"></i> About</a>
-        </li>
-        <li>
-          <a href="#skills" class="nav-link"><i class="fas fa-code"></i> Skills</a>
-        </li>
-        <li>
-          <a href="#projects" class="nav-link"><i class="fas fa-project-diagram"></i> Projects</a>
-        </li>
-        <li>
-          <a href="#experience" class="nav-link"><i class="fas fa-briefcase"></i> Experience</a>
-        </li>
-        <li>
-          <a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
-        </li>
-      </ul>
-      <div class="nav-actions">
-        <a href="https://github.com/keshav-pec" target="_blank" class="nav-social" aria-label="GitHub">
-          <i class="fab fa-github"></i>
-        </a>
-        <a href="https://www.linkedin.com/in/keshavgoyalpec/" target="_blank" class="nav-social" aria-label="LinkedIn">
-          <i class="fab fa-linkedin"></i>
-        </a>
-        <a href="#contact" class="btn-nav">Hire Me</a>
-      </div>
-      <div class="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
+  <!-- Scroll progress (CSS scroll-timeline driven) -->
+  <div class="progress" aria-hidden="true"><i></i></div>
+
+  <!-- Sentinel used by IntersectionObserver instead of a scroll listener -->
+  <div id="top-sentinel" aria-hidden="true"></div>
+
+  <!-- ================= ICON SPRITE ================= -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="k-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#2563eb" />
+        <stop offset=".55" stop-color="#1d4ed8" />
+        <stop offset="1" stop-color="#0b1220" />
+      </linearGradient>
+    </defs>
+    <symbol id="i-k" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="9.5" fill="url(#k-grad)" />
+      <g fill="none" stroke-width="3.2" stroke-linecap="round">
+        <path d="M11 8.5v15" stroke="#fff" />
+        <path d="M21.6 8.9 12.35 16" stroke="#fff" />
+        <path d="M12.35 16 21.6 23.1" stroke="#f5b301" />
+      </g>
+    </symbol>
+    <symbol id="i-github" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path
+        d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.63-5.48 5.93.43.37.81 1.1.81 2.22 0 1.6-.01 2.9-.01 3.29 0 .32.21.7.83.58C20.56 22.29 24 17.8 24 12.5 24 5.87 18.63.5 12 .5Z" />
+    </symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path
+        d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z" />
+    </symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24">
+      <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
+      <path d="m3 7 8.24 5.77a1.5 1.5 0 0 0 1.72 0L21 7" />
+    </symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24">
+      <path
+        d="M21 16.5v2.6a2 2 0 0 1-2.18 2 19.5 19.5 0 0 1-8.5-3.03 19.2 19.2 0 0 1-5.9-5.9A19.5 19.5 0 0 1 1.4 3.6 2 2 0 0 1 3.39 1.4H6a2 2 0 0 1 2 1.72c.12.9.35 1.79.67 2.63a2 2 0 0 1-.45 2.11L7.1 8.98a16 16 0 0 0 5.92 5.92l1.12-1.12a2 2 0 0 1 2.1-.45c.85.32 1.73.55 2.64.67A2 2 0 0 1 21 16.5Z" />
+    </symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24">
+      <path d="M20 10.5c0 5.5-8 12-8 12s-8-6.5-8-12a8 8 0 0 1 16 0Z" />
+      <circle cx="12" cy="10.5" r="3" />
+    </symbol>
+    <symbol id="i-link" viewBox="0 0 24 24">
+      <path d="M14 4h6v6" />
+      <path d="M20 4 11 13" />
+      <path d="M18 14.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4.5" />
+    </symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24">
+      <path d="M12 19V5" />
+      <path d="m5.5 11.5 6.5-6.5 6.5 6.5" />
+    </symbol>
+    <symbol id="i-file" viewBox="0 0 24 24">
+      <path d="M14 2.5H7A2 2 0 0 0 5 4.5v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-12Z" />
+      <path d="M14 2.5v5h5" />
+      <path d="M8.5 13h7M8.5 17h5" />
+    </symbol>
+    <symbol id="i-code" viewBox="0 0 24 24">
+      <path d="m8.5 8-4.5 4 4.5 4" />
+      <path d="m15.5 8 4.5 4-4.5 4" />
+      <path d="m13.5 5-3 14" />
+    </symbol>
+    <symbol id="i-stack" viewBox="0 0 24 24">
+      <path d="m12 2.5 9 5-9 5-9-5 9-5Z" />
+      <path d="m3 12.5 9 5 9-5" />
+      <path d="m3 17 9 5 9-5" />
+    </symbol>
+    <symbol id="i-layout" viewBox="0 0 24 24">
+      <rect x="3" y="3.5" width="18" height="17" rx="2.5" />
+      <path d="M3 9.5h18M9 9.5V20.5" />
+    </symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24">
+      <path d="M3.5 6h9M18.5 6h2M3.5 12h2.5M11.5 12h9M3.5 18h8M17 18h3.5" />
+      <circle cx="15.5" cy="6" r="2.2" />
+      <circle cx="8.5" cy="12" r="2.2" />
+      <circle cx="14" cy="18" r="2.2" />
+    </symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24">
+      <path d="M7 4h10v5a5 5 0 0 1-10 0V4Z" />
+      <path d="M7 5.5H4.5A2.5 2.5 0 0 0 7 10.5M17 5.5h2.5A2.5 2.5 0 0 1 17 10.5" />
+      <path d="M12 14v3.5M8.5 21h7M9.5 21c0-2 1-3.5 2.5-3.5s2.5 1.5 2.5 3.5" />
+    </symbol>
+    <symbol id="i-briefcase" viewBox="0 0 24 24">
+      <rect x="2.5" y="7" width="19" height="13" rx="2.5" />
+      <path d="M8.5 7V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v2" />
+      <path d="M2.5 12.5h19" />
+    </symbol>
+    <symbol id="i-cap" viewBox="0 0 24 24">
+      <path d="m12 3.5 10 5-10 5-10-5 10-5Z" />
+      <path d="M6.5 11v5c0 1.7 2.5 3 5.5 3s5.5-1.3 5.5-3v-5" />
+      <path d="M21 9v6" />
+    </symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24">
+      <path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.2l-1.8-5.6L4.5 10.8 10.2 9 12 3.5Z" />
+      <path d="M19 16.5v3.5M17.25 18.25h3.5" />
+    </symbol>
+    <symbol id="i-users" viewBox="0 0 24 24">
+      <path d="M16 20v-1.5a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4V20" />
+      <circle cx="9" cy="7.5" r="3.5" />
+      <path d="M22 20v-1.5a4 4 0 0 0-3-3.87" />
+      <path d="M16.5 4.13a4 4 0 0 1 0 7.24" />
+    </symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24">
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </symbol>
+    <symbol id="i-close" viewBox="0 0 24 24">
+      <path d="M6 6 18 18M18 6 6 18" />
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24">
+      <path d="m7 10 5 5 5-5" />
+    </symbol>
+    <symbol id="i-send" viewBox="0 0 24 24">
+      <path d="M21.5 2.5 10.5 13.5" />
+      <path d="M21.5 2.5 14.5 21.5l-4-8-8-4 19-7Z" />
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="4.3" />
+      <path
+        d="M12 2.5v2.6M12 18.9v2.6M4.3 4.3l1.85 1.85M17.85 17.85l1.85 1.85M2.5 12h2.6M18.9 12h2.6M4.3 19.7l1.85-1.85M17.85 6.15l1.85-1.85" />
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24">
+      <path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z" />
+    </symbol>
+  </svg>
+
+  <!-- ================= PARALLAX BACKDROP ================= -->
+  <div class="backdrop" aria-hidden="true">
+    <div class="bd-grid" data-par-bg="0.10"></div>
+    <div class="bd-orb bd-orb--a" data-par-bg="0.26"></div>
+    <div class="bd-orb bd-orb--b" data-par-bg="0.42"></div>
+    <div class="bd-orb bd-orb--c" data-par-bg="0.16"></div>
+    <div class="bd-rain" id="rain"></div>
+    <div class="bd-vignette"></div>
+  </div>
+
+  <!-- ================= NAV ================= -->
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#home">
+        <svg class="brand-mark" aria-hidden="true">
+          <use href="#i-k" />
+        </svg>
+        <span class="brand-name">Keshav Goyal</span>
+      </a>
+
+      <nav class="nav-menu" id="nav-menu" aria-label="Primary">
+        <ul>
+          <li><a class="nav-link" href="#about">About</a></li>
+          <li><a class="nav-link" href="#skills">Skills</a></li>
+          <li><a class="nav-link" href="#projects">Projects</a></li>
+          <li><a class="nav-link" href="#experience">Experience</a></li>
+          <li><a class="nav-link" href="#achievements">Highlights</a></li>
+          <li><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+        <div class="nav-menu-social">
+          <a href="https://github.com/keshav-pec" target="_blank" rel="noopener" aria-label="GitHub"><svg class="ic">
+              <use href="#i-github" />
+            </svg></a>
+          <a href="https://www.linkedin.com/in/keshavgoyalpec/" target="_blank" rel="noopener"
+            aria-label="LinkedIn"><svg class="ic">
+              <use href="#i-linkedin" />
+            </svg></a>
+          <a href="mailto:keshavpec24@gmail.com" aria-label="Email"><svg class="ic">
+              <use href="#i-mail" />
+            </svg></a>
+        </div>
+      </nav>
+
+      <div class="nav-right">
+        <a class="icon-btn" href="https://github.com/keshav-pec" target="_blank" rel="noopener" aria-label="GitHub"><svg
+            class="ic">
+            <use href="#i-github" />
+          </svg></a>
+        <a class="icon-btn" href="https://www.linkedin.com/in/keshavgoyalpec/" target="_blank" rel="noopener"
+          aria-label="LinkedIn"><svg class="ic">
+            <use href="#i-linkedin" />
+          </svg></a>
+        <a class="btn btn-sm" href="#contact">Let's talk</a>
+        <button class="icon-btn theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark theme">
+          <svg class="ic ic-moon" aria-hidden="true">
+            <use href="#i-moon" />
+          </svg>
+          <svg class="ic ic-sun" aria-hidden="true">
+            <use href="#i-sun" />
+          </svg>
+        </button>
+        <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+          <svg class="ic ic-open">
+            <use href="#i-menu" />
+          </svg>
+          <svg class="ic ic-close">
+            <use href="#i-close" />
+          </svg>
+        </button>
       </div>
     </div>
-  </nav>
+  </header>
 
-  <!-- Hero Section -->
-  <section id="home" class="hero">
-    <!-- Parallax depth layers (CSS scroll-driven, JS fallback) -->
-    <div class="parallax-wrapper" aria-hidden="true">
-      <div class="parallax-layer" data-depth="0.12"></div>
-      <div class="parallax-layer" data-depth="0.28"></div>
-    </div>
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-text">
-          <h1 class="hero-title">
-            Hi, I'm <span class="highlight">Keshav Goyal</span>
+  <main id="main">
+
+    <!-- ================= HERO ================= -->
+    <section id="home" class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1 class="hero-title reveal">
+            Hi, I'm <span class="grad">Keshav Goyal</span>
           </h1>
-          <p class="hero-subtitle">
-            Full Stack Developer | CSE Student @PEC | Problem Solver
+          <p class="hero-role reveal">
+            <span id="typed" class="typed"></span><span class="caret" aria-hidden="true"></span>
           </p>
-          <p class="hero-description">
-            Passionate about building scalable web applications, Agentic AI
-            workflows, and creating seamless user experiences with modern
-            technologies.
+          <p class="hero-desc reveal">
+            Pre-Final Year CSE undergraduate at Punjab Engineering College building production
+            web platforms — MERN systems, Agentic AI workflows shipped on AWS and GCP.
           </p>
-        </div>
-        <div class="hero-image">
-          <div class="image-wrapper">
-            <img src="images/ProfilePic.png" alt="Keshav Goyal" loading="lazy" decoding="async" />
+          <div class="hero-actions reveal">
+            <a class="btn btn-primary" href="#projects">
+              View my work <svg class="ic">
+                <use href="#i-chevron" />
+              </svg>
+            </a>
+            <a class="btn btn-ghost" href="resume/Resume.pdf" target="_blank" rel="noopener">
+              <svg class="ic">
+                <use href="#i-file" />
+              </svg> Resume
+            </a>
           </div>
+          <dl class="hero-stats reveal">
+            <div>
+              <dt>500+</dt>
+              <dd>DSA problems</dd>
+            </div>
+            <div>
+              <dt>8.79</dt>
+              <dd>CGPA / 10</dd>
+            </div>
+            <div>
+              <dt>5+</dt>
+              <dd>Major Projects</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="hero-visual reveal par" data-par="0.12">
+          <div class="portrait">
+            <img src="images/opt/profile-760.webp"
+              srcset="images/opt/profile-400.webp 400w, images/opt/profile-760.webp 760w"
+              sizes="(max-width: 900px) 220px, 340px" width="760" height="760" alt="Portrait of Keshav Goyal"
+              fetchpriority="high" decoding="async" />
+          </div>
+          <div class="chip chip--1"><svg class="ic">
+              <use href="#i-code" />
+            </svg> Java</div>
+          <div class="chip chip--2"><svg class="ic">
+              <use href="#i-spark" />
+            </svg> MERN</div>
+          <div class="chip chip--3"><svg class="ic">
+              <use href="#i-stack" />
+            </svg> GenAI</div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- About Section -->
-  <section id="about" class="about">
-    <div class="container">
-      <h2 class="section-title">About Me</h2>
-      <div class="about-content">
-        <div class="about-code-window">
-          <div class="ide-body">
-            <div class="code-content">
-              <pre><code><span class="json-punctuation">{</span>
-  <span class="json-key">"location"</span><span class="json-punctuation">:</span> <span class="json-string">"Patiala, Punjab, India"</span><span class="json-punctuation">,</span>
-  <span class="json-key">"college"</span><span class="json-punctuation">:</span> <span class="json-punctuation">{</span>
-    <span class="json-key">"name"</span><span class="json-punctuation">:</span> <span class="json-string">"Punjab Engineering College, Chandigarh"</span><span class="json-punctuation">,</span>
-    <span class="json-key">"degree"</span><span class="json-punctuation">:</span> <span class="json-string">"B.Tech CSE"</span><span class="json-punctuation">,</span>
-    <span class="json-key">"duration"</span><span class="json-punctuation">:</span> <span class="json-string">"2024-2028"</span><span class="json-punctuation">,</span>
-    <span class="json-key">"cgpa"</span><span class="json-punctuation">:</span> <span class="json-number">8.79</span>
-  <span class="json-punctuation">}</span><span class="json-punctuation">,</span>
-  <span class="json-key">"school"</span><span class="json-punctuation">:</span> <span class="json-punctuation">{</span>
-    <span class="json-key">"name"</span><span class="json-punctuation">:</span> <span class="json-string">"DAV Public School, Patiala"</span><span class="json-punctuation">,</span>
-    <span class="json-key">"class_XII"</span><span class="json-punctuation">:</span> <span class="json-string">"89.4%"</span><span class="json-punctuation">,</span>
-    <span class="json-key">"class_X"</span><span class="json-punctuation">:</span> <span class="json-string">"97.2%"</span>
-  <span class="json-punctuation">}</span><span class="json-punctuation">,</span>
-<span class="json-punctuation">}</span></code></pre>
-            </div>
-            <div class="resume-icon-container">
-              <a href="resume/Resume.pdf" target="_blank" class="resume-icon-box" title="Open Latest Resume">
-                <div class="resume-icon">
-                  <i class="fas fa-file-pdf"></i>
-                </div>
-                <p>View Resume</p>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+      <a class="scroll-cue" href="#about" aria-label="Scroll to about">
+        <svg class="ic">
+          <use href="#i-chevron" />
+        </svg>
+      </a>
+    </section>
 
-  <!-- Skills Section -->
-  <section id="skills" class="skills">
-    <div class="container">
-      <h2 class="section-title">Skills & Technologies</h2>
-      <div class="skills-grid">
-        <div class="skill-category">
-          <div class="skill-card-inner">
-            <div class="skill-card-front">
-              <h3>
-                <i class="fas fa-laptop-code"></i> Programming Languages
-              </h3>
-            </div>
-            <div class="skill-card-back">
-              <div class="skill-tags">
-                <span class="skill-tag">Java</span>
-                <span class="skill-tag">C++</span>
-                <span class="skill-tag">Python</span>
-                <span class="skill-tag">JavaScript</span>
-                <span class="skill-tag">Kotlin</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="skill-category">
-          <div class="skill-card-inner">
-            <div class="skill-card-front">
-              <h3><i class="fas fa-globe"></i> Web Development</h3>
-            </div>
-            <div class="skill-card-back">
-              <div class="skill-tags">
-                <span class="skill-tag">MERN Stack</span>
-                <span class="skill-tag">REST APIs</span>
-                <span class="skill-tag">MongoDB</span>
-                <span class="skill-tag">Tailwind CSS</span>
-                <span class="skill-tag">WebRTC</span>
-                <span class="skill-tag">Streamlit</span>
-                <span class="skill-tag">Manifest V3</span>
-                <span class="skill-tag">GenAI</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="skill-category">
-          <div class="skill-card-inner">
-            <div class="skill-card-front">
-              <h3><i class="fas fa-brain"></i> CS Fundamentals</h3>
-            </div>
-            <div class="skill-card-back">
-              <div class="skill-tags">
-                <span class="skill-tag">Data Structures &amp; Algorithms</span>
-                <span class="skill-tag">Object Oriented Programming</span>
-                <span class="skill-tag">Operating Systems</span>
-                <span class="skill-tag">Computer Networks</span>
-                <span class="skill-tag">AI / ML</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="skill-category">
-          <div class="skill-card-inner">
-            <div class="skill-card-front">
-              <h3><i class="fas fa-tools"></i> Tools &amp; Technologies</h3>
-            </div>
-            <div class="skill-card-back">
-              <div class="skill-tags">
-                <span class="skill-tag">Git and GitHub</span>
-                <span class="skill-tag">VS Code</span>
-                <span class="skill-tag">Docker</span>
-                <span class="skill-tag">Hoppscotch</span>
-                <span class="skill-tag">GCP</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="skill-category">
-          <div class="skill-card-inner">
-            <div class="skill-card-front">
-              <h3><i class="fas fa-trophy"></i> Competitive Programming</h3>
-            </div>
-            <div class="skill-card-back">
-              <div class="skill-tags">
-                <span class="skill-tag">Problem Solving in Java</span>
-                <span class="skill-tag">CodeChef ⭐⭐⭐ (3-Star)</span>
-                <span class="skill-tag">Codeforces Specialist</span>
-                <span class="skill-tag">Leetcode (1700+)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <!-- ================= ABOUT ================= -->
+    <section id="about" class="sec">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <p class="sec-num">01</p>
+          <h2 class="sec-title">About me</h2>
+        </header>
 
-  <!-- Projects Section -->
-  <section id="projects" class="projects">
-    <div class="container">
-      <h2 class="section-title">Featured Projects</h2>
-      <div class="projects-grid">
-        <!-- LasMinAI -->
-        <div class="project-card">
-          <div class="project-image">
-            <img src="images/LasMinAI.png" alt="LasMinAI" loading="lazy" decoding="async" />
-            <div class="project-overlay">
-              <a href="https://lasmin-ai-280275748399.asia-south1.run.app" class="project-link" target="_blank"
-                title="Live Demo"><i class="fas fa-external-link-alt"></i></a>
-              <a href="https://github.com/keshav-pec/LasMinAI" class="project-link" target="_blank" title="GitHub"><i
-                  class="fab fa-github"></i></a>
-            </div>
-          </div>
-          <div class="project-info">
-            <h3>LasMinAI - AI Productivity Manager</h3>
+        <div class="about-grid">
+          <div class="about-text reveal">
             <p>
-              9 interconnected Agentic AI modules, including conversational
-              task management, autonomous workstation planning, AI reminders,
-              habit automation, voice assistant, browser task extraction, and
-              smart form autofill. Integrated Gemini with Google Calendar,
-              Gmail, Drive, and Cloud Scheduler to automate workflows.
+              I'm a Pre-Final year Computer Science student at <strong>Punjab Engineering
+                College, Chandigarh</strong>, focused on building things that actually ship.
+              Most of my work sits at the intersection of full-stack engineering and
+              applied AI — multi-agent productivity systems, real-time video
+              infrastructure and retrieval pipelines.
             </p>
-            <div class="project-tags">
-              <span>MERN</span>
-              <span>GenAI</span>
-              <span>Manifest V3</span>
-              <span>Cloud Scheduler</span>
-              <span>Google Webspace APIs</span>
-            </div>
-          </div>
-        </div>
-        <!-- NeoSetu -->
-        <div class="project-card">
-          <div class="project-image">
-            <img src="images/Screenshot 2026-03-21 at 17.59.05.png" alt="NeoSetu" loading="lazy" decoding="async" />
-            <div class="project-overlay">
-              <a href="https://nexmeetv1.vercel.app/" class="project-link" target="_blank" title="Live Demo"><i
-                  class="fas fa-external-link-alt"></i></a>
-              <a href="https://github.com/keshav-pec/NexMeetv1" class="project-link" target="_blank" title="GitHub"><i
-                  class="fab fa-github"></i></a>
-            </div>
-          </div>
-          <div class="project-info">
-            <h3>NexMeet – Real-Time Video Conferencing Platform</h3>
             <p>
-              Full-stack video conferencing platform supporting multiple
-              concurrent users using WebRTC signaling. Features video calls,
-              screen sharing, live chat, and secure authentication with
-              scalable REST APIs and room-based session management.
+              I care about the unglamorous parts: priority-scoring engines that pick the
+              right task, Chrome extension that ships in a few&nbsp;KB payload. Alongside that I solve
+              competitive programming problems daily and contribute to open source.
             </p>
-            <div class="project-tags">
-              <span>React</span>
-              <span>Node.js</span>
-              <span>WebRTC</span>
-              <span>LiveKit</span>
-              <span>MongoDB</span>
-            </div>
-          </div>
-        </div>
-        <!-- AI RAG Project -->
-        <div class="project-card">
-          <div class="project-image">
-            <img src="images/RAG_Project.png" alt="AI Knowledge Retrieval System" loading="lazy" decoding="async" />
-            <div class="project-overlay">
-              <a href="https://github.com/keshav-pec" class="project-link" target="_blank" title="GitHub"><i
-                  class="fab fa-github"></i></a>
-            </div>
-          </div>
-          <div class="project-info">
-            <h3>AI Knowledge Retrieval System (RAG)</h3>
             <p>
-              Built a Retrieval-Augmented Generation system processing 1,000+
-              pages and generating 6,000+ vector embeddings for semantic
-              document search. Engineered FAISS-based retrieval pipeline
-              reducing query latency by ~40%.
+              I love puzzle solving. I am a Foundational Committee member of the Speed Cubing
+              Club, PEC. This club is dedicated to promote the cubing culture in Chandigarh by organizing
+              various awareness drives, events and competitions.
             </p>
-            <div class="project-tags">
-              <span>LangChain</span>
-              <span>FAISS</span>
-              <span>Hugging Face</span>
-              <span>FastAPI</span>
-              <span>Streamlit</span>
-            </div>
+            <a class="text-link" href="resume/Resume.pdf" target="_blank" rel="noopener">
+              <svg class="ic">
+                <use href="#i-file" />
+              </svg> Download full resume
+            </a>
           </div>
+
+          <aside class="about-card reveal par" data-par="0.07">
+            <div class="card-bar"><span></span><span></span><span></span></div>
+            <dl class="facts">
+              <div>
+                <dt><svg class="ic">
+                    <use href="#i-cap" />
+                  </svg> Education</dt>
+                <dd>B.Tech CSE · PEC Chandigarh<br /><span class="muted">2024 – 2028 · CGPA 8.79/10</span></dd>
+              </div>
+              <div>
+                <dt><svg class="ic">
+                    <use href="#i-pin" />
+                  </svg> Based in</dt>
+                <dd>Patiala, Punjab, India</dd>
+              </div>
+              <div>
+                <dt><svg class="ic">
+                    <use href="#i-briefcase" />
+                  </svg> Focus</dt>
+                <dd>Full-stack · GenAI · Real-time systems</dd>
+              </div>
+              <div>
+                <dt><svg class="ic">
+                    <use href="#i-trophy" />
+                  </svg> Achievements</dt>
+                <dd>Leetcode 1770+ · Codeforces Specialist · CodeChef 3★<br /><span class="muted">99.5%ile in JEE Mains
+                    2024</span>
+                </dd>
+              </div>
+            </dl>
+          </aside>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Experience Section -->
-  <section id="experience" class="experience">
-    <div class="container">
-      <h2 class="section-title">Experience</h2>
-      <div class="experience-list">
-        <div class="experience-item">
-          <div class="experience-header">
-            <h3>Backend Engineering Intern</h3>
-            <p class="experience-date">
-              <i class="fas fa-calendar"></i> Jun 2026 - Present
-            </p>
-          </div>
-          <h4>Reagvis Labs</h4>
-          <ul>
-            <li>
-              Contributing to software architecture and collaborating with the
-              development team to build reliable production applications.
-            </li>
-            <li>
-              Working on web architecture while integrating AI/ML services
-              into production workflows.
-            </li>
-          </ul>
-        </div>
-        <div class="experience-item">
-          <div class="experience-header">
-            <h3>Frontend Developer (Freelance)</h3>
-            <p class="experience-date">
-              <i class="fas fa-calendar"></i> Oct 2025 - Nov 2025
-            </p>
-          </div>
-          <h4>Rohindia</h4>
-          <ul>
-            <li>
-              Worked on frontend technologies for production applications
-              including the <strong>CafeLamhey</strong> blogging platform.
-            </li>
-            <li>
-              Implemented responsive UI components, optimized client-side
-              performance, and collaborated with backend developers to
-              integrate REST APIs.
-            </li>
-          </ul>
-        </div>
-        <div class="experience-item">
-          <div class="experience-header">
-            <h3>Open Source Contributor</h3>
-            <p class="experience-date">
-              <i class="fas fa-calendar"></i> Oct 2025
-            </p>
-          </div>
-          <h4>Hacktoberfest</h4>
-          <ul>
-            <li>
-              Contributed to multiple open-source repositories including
-              <strong>AlgoVisualizer</strong> and <strong>ACM-Fun</strong>.
-            </li>
-            <li>
-              Developed <strong>6+</strong> responsive UI components using
-              React.js, improving usability and interface consistency across
-              applications.
-            </li>
-            <li>
-              Optimized backend APIs and debugging workflows, improving
-              overall system reliability.
-            </li>
-          </ul>
+    <!-- ================= SKILLS ================= -->
+    <section id="skills" class="sec">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <p class="sec-num">02</p>
+          <h2 class="sec-title">Skills &amp; tooling</h2>
+        </header>
+
+        <div class="skills-grid">
+          <article class="skill-card reveal">
+            <h3><svg class="ic">
+                <use href="#i-code" />
+              </svg> Languages</h3>
+            <ul class="tags">
+              <li>Java</li>
+              <li>C++</li>
+              <li>Python</li>
+              <li>JavaScript</li>
+              <li>SQL</li>
+            </ul>
+          </article>
+
+          <article class="skill-card reveal">
+            <h3><svg class="ic">
+                <use href="#i-stack" />
+              </svg> Backend &amp; data</h3>
+            <ul class="tags">
+              <li>Node.js</li>
+              <li>Express.js</li>
+              <li>Manifest V3</li>
+              <li>GenAI</li>
+              <li>MongoDB</li>
+              <li>Redis</li>
+              <li>Pinecone</li>
+            </ul>
+          </article>
+
+          <article class="skill-card reveal">
+            <h3><svg class="ic">
+                <use href="#i-layout" />
+              </svg> Frontend</h3>
+            <ul class="tags">
+              <li>React</li>
+              <li>Tailwind CSS</li>
+              <li>Axios</li>
+              <li>Zustand</li>
+              <li>Framer Motion</li>
+              <li>SPA architecture</li>
+            </ul>
+          </article>
+
+          <article class="skill-card reveal">
+            <h3><svg class="ic">
+                <use href="#i-wrench" />
+              </svg> Tools &amp; cloud</h3>
+            <ul class="tags">
+              <li>Git</li>
+              <li>GitHub</li>
+              <li>Docker</li>
+              <li>Postman</li>
+              <li>Jest</li>
+              <li>Chrome Extensions</li>
+              <li>Google Cloud</li>
+              <li>AWS</li>
+            </ul>
+          </article>
+
+          <article class="skill-card skill-card--wide reveal">
+            <h3><svg class="ic">
+                <use href="#i-trophy" />
+              </svg> Competitive programming</h3>
+            <ul class="tags">
+              <li>CodeChef — 3★</li>
+              <li>Codeforces — Specialist</li>
+              <li>LeetCode — 1770+</li>
+              <li>500+ problems solved</li>
+            </ul>
+          </article>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Contact Section -->
-  <section id="contact" class="contact">
-    <div class="container">
-      <h2 class="section-title">Get In Touch</h2>
-      <div class="contact-content">
-        <div class="contact-text">
-          <p>
-            I'm actively seeking internship opportunities for Summer 2027 in
-            full-stack development roles.
-            <br />
-            Open to discussing exciting projects, freelance work, or
-            collaboration opportunities!
-          </p>
-          <div class="contact-item">
-            <i class="fas fa-map-marker-alt"></i>
-            <div class="contact-item-text">
-              <h4>Location</h4>
-              <p>Patiala, Punjab, India</p>
+    <!-- ================= PROJECTS ================= -->
+    <section id="projects" class="sec">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <p class="sec-num">03</p>
+          <h2 class="sec-title">Featured projects</h2>
+        </header>
+
+        <div class="proj-grid">
+
+          <article class="proj reveal">
+            <div class="proj-media">
+              <img src="images/opt/lasminai-960.webp"
+                srcset="images/opt/lasminai-640.webp 640w, images/opt/lasminai-960.webp 960w"
+                sizes="(max-width: 700px) 92vw, (max-width: 1080px) 46vw, 350px" width="960" height="600"
+                alt="LasMinAI dashboard" loading="lazy" decoding="async" />
+              <div class="proj-links">
+                <a href="https://lasmin-ai-280275748399.asia-south1.run.app" target="_blank" rel="noopener"
+                  aria-label="LasMinAI live demo"><svg class="ic">
+                    <use href="#i-link" />
+                  </svg></a>
+                <a href="https://github.com/keshav-pec/LasMinAI" target="_blank" rel="noopener"
+                  aria-label="LasMinAI source"><svg class="ic">
+                    <use href="#i-github" />
+                  </svg></a>
+              </div>
             </div>
-          </div>
-          <div class="contact-item">
-            <i class="fab fa-linkedin"></i>
-            <div class="contact-item-text">
-              <h4>LinkedIn</h4>
-              <a href="https://www.linkedin.com/in/keshavgoyalpec/" target="_blank">linkedin.com/in/keshavgoyalpec</a>
+            <div class="proj-body">
+              <h3>LasMinAI — AI Productivity Platform</h3>
+              <ul class="proj-points">
+                <li><b>9 interconnected AI modules</b> — task management, workspace planning,
+                  daily blueprint, pre-session digests, proactive reminders, gamified habit
+                  tracking, voice assistant, browser task extraction and smart form autofill.</li>
+                <li>A <b>dynamic priority-scoring engine</b> combining urgency, AI-estimated
+                  complexity and technical effort to optimise execution order.</li>
+                <li>Deeply integrated <b>Manifest V3</b> Chrome extension using Service
+                  Workers, packaged into a <b>43 KB</b> production <code>.zip</code>.</li>
+              </ul>
+              <ul class="tags tags--sm">
+                <li>MERN</li>
+                <li>Gemini</li>
+                <li>Chrome Extension</li>
+                <li>Google Workspace APIs</li>
+              </ul>
             </div>
-          </div>
+          </article>
+
+          <article class="proj reveal">
+            <div class="proj-media">
+              <img src="images/opt/nexmeet-960.webp"
+                srcset="images/opt/nexmeet-640.webp 640w, images/opt/nexmeet-960.webp 960w"
+                sizes="(max-width: 700px) 92vw, (max-width: 1080px) 46vw, 350px" width="960" height="600"
+                alt="NexMeet video conferencing interface" loading="lazy" decoding="async" />
+              <div class="proj-links">
+                <a href="https://nexmeetv1.vercel.app/" target="_blank" rel="noopener"
+                  aria-label="NexMeet live demo"><svg class="ic">
+                    <use href="#i-link" />
+                  </svg></a>
+                <a href="https://github.com/keshav-pec/NexMeetv1" target="_blank" rel="noopener"
+                  aria-label="NexMeet source"><svg class="ic">
+                    <use href="#i-github" />
+                  </svg></a>
+              </div>
+            </div>
+            <div class="proj-body">
+              <h3>NexMeet — Real-Time Video Conferencing</h3>
+              <ul class="proj-points">
+                <li>Full-stack conferencing platform supporting <b>50+ concurrent users</b>
+                  on an <b>SFU</b> architecture.</li>
+                <li>AI-powered <b>live transcription and meeting summarisation</b> — real-time
+                  captions plus host-accessible summaries through meeting history and archives.</li>
+                <li>Speaker detection, participant management, passcode-protected rooms and
+                  dynamic video layouts with pagination.</li>
+              </ul>
+              <ul class="tags tags--sm">
+                <li>React</li>
+                <li>Node.js</li>
+                <li>MongoDB</li>
+                <li>WebRTC</li>
+                <li>LiveKit</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="proj reveal">
+            <div class="proj-media">
+              <img src="images/opt/rag-960.webp" srcset="images/opt/rag-640.webp 640w, images/opt/rag-960.webp 960w"
+                sizes="(max-width: 700px) 92vw, (max-width: 1080px) 46vw, 350px" width="960" height="600"
+                alt="AI knowledge retrieval system" loading="lazy" decoding="async" />
+              <div class="proj-links">
+                <a href="https://github.com/keshav-pec" target="_blank" rel="noopener"
+                  aria-label="RAG project source"><svg class="ic">
+                    <use href="#i-github" />
+                  </svg></a>
+              </div>
+            </div>
+            <div class="proj-body">
+              <h3>AI Knowledge Retrieval System (RAG)</h3>
+              <ul class="proj-points">
+                <li>Retrieval-Augmented Generation system processing <b>1,000+ pages</b> and
+                  generating <b>6,000+ vector embeddings</b> for semantic document search on a
+                  <b>FAISS</b> vector database.
+                </li>
+                <li>REST APIs for document ingestion and real-time querying with
+                  source-grounded responses.</li>
+              </ul>
+              <ul class="tags tags--sm">
+                <li>Python</li>
+                <li>FAISS</li>
+                <li>Hugging Face</li>
+                <li>FastAPI</li>
+                <li>Streamlit</li>
+              </ul>
+            </div>
+          </article>
+
         </div>
-        <div class="contact-form">
-          <form id="contactForm">
-            <div class="form-group">
-              <input type="text" id="name" name="name" placeholder="Your Name" required />
+      </div>
+    </section>
+
+    <!-- ================= EXPERIENCE ================= -->
+    <section id="experience" class="sec">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <p class="sec-num">04</p>
+          <h2 class="sec-title">Experience &amp; education</h2>
+        </header>
+
+        <ol class="timeline">
+          <li class="tl-item reveal">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <p class="tl-date">Jun 2026 – Jul 2026</p>
+              <h3>Full Stack Developer Intern</h3>
+              <p class="tl-org"><svg class="ic">
+                  <use href="#i-briefcase" />
+                </svg> Reagvis Labs</p>
+              <ul>
+                <li>Contributed to <b>software architecture</b> using the MERN stack,
+                  collaborating with the development team to build and deploy reliable
+                  production applications on <b>AWS</b>.</li>
+                <li>Worked with AWS-hosted infrastructure, <b>Docker</b> and
+                  <b>GitHub Actions CI/CD</b> to automate build and deployment workflows
+                  and support reliable production releases.
+                </li>
+              </ul>
             </div>
-            <div class="form-group">
-              <input type="email" id="email" name="email" placeholder="Your Email" required />
+          </li>
+
+          <li class="tl-item reveal">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <p class="tl-date">Oct 2025 – Nov 2025</p>
+              <h3>Frontend Developer <span class="muted">(Freelance)</span></h3>
+              <p class="tl-org"><svg class="ic">
+                  <use href="#i-briefcase" />
+                </svg> Rohindia</p>
+              <ul>
+                <li>Engineered the frontend interfaces for <b>Cafe Lamhey</b> and
+                  <b>Lamhistan</b> using semantic HTML5 and vanilla JavaScript, achieving
+                  <b>96+ SEO and accessibility scores</b> on Google Lighthouse.
+                </li>
+              </ul>
             </div>
-            <div class="form-group">
-              <input type="text" id="subject" name="subject" placeholder="Subject" required />
+          </li>
+
+          <li class="tl-item reveal">
+            <div class="tl-dot tl-dot--edu"></div>
+            <div class="tl-card">
+              <p class="tl-date">2024 – 2028</p>
+              <h3>B.Tech, Computer Science &amp; Engineering</h3>
+              <p class="tl-org"><svg class="ic">
+                  <use href="#i-cap" />
+                </svg> Punjab Engineering College, Chandigarh</p>
+              <ul>
+                <li>CGPA <b>8.79 / 10</b>.</li>
+                <li>Coursework: Data Structures, Algorithms, Object Oriented Programming,
+                  Operating Systems, Computer Networks, Database Management Systems, AI/ML.</li>
+              </ul>
             </div>
-            <div class="form-group">
-              <textarea id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= ACHIEVEMENTS ================= -->
+    <section id="achievements" class="sec">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <p class="sec-num">05</p>
+          <h2 class="sec-title">Highlights &amp; leadership</h2>
+        </header>
+
+        <div class="hl-grid">
+          <article class="hl reveal">
+            <h3><svg class="ic">
+                <use href="#i-trophy" />
+              </svg> Achievements</h3>
+            <ul>
+              <li>Open Source Contributor — <b>Hacktoberfest 2025</b>, 6+ pull requests merged.</li>
+              <li><b>College Finalist</b> — Smart India Hackathon 2025.</li>
+              <li>Solved <b>500+ DSA problems</b> across competitive platforms.</li>
+              <li><b>99.5 percentile</b> in JEE Mains 2024 · <b>295</b> in BITSAT 2024.</li>
+              <li>Qualified <b>JEE Advanced 2024</b> — AIR 13352.</li>
+            </ul>
+          </article>
+
+          <article class="hl reveal">
+            <h3><svg class="ic">
+                <use href="#i-users" />
+              </svg> Positions of responsibility</h3>
+            <ul>
+              <li><b>Execution Body Member</b> — PEC ACM-CSS. Delivered a GitHub workshop for
+                <b>50+ students</b> covering version control and practical Git/GitHub usage,
+                and contributed to college events and technical sessions.
+              </li>
+              <li><b>Core Committee Member</b> — Women Empowerment Cell, PEC.</li>
+              <li><b>Foundational Committee Member</b> — Speed Cubing Club, PEC.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTACT ================= -->
+    <section id="contact" class="sec">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <p class="sec-num">06</p>
+          <h2 class="sec-title">Get in touch</h2>
+        </header>
+
+        <div class="contact-grid">
+          <div class="contact-info reveal">
+            <p class="lead">
+              I'm open to <b>collaboration and freelance work</b> — product
+              builds, real-time systems and AI integrations. If you have something
+              interesting in mind, I'd like to hear about it.</p>
+            <ul class="contact-list">
+              <li><a href="mailto:keshavpec24@gmail.com"><svg class="ic">
+                    <use href="#i-mail" />
+                  </svg>
+                  <span><b>Email</b>keshavpec24@gmail.com</span></a></li>
+              <li><a href="tel:+917589978904"><svg class="ic">
+                    <use href="#i-phone" />
+                  </svg>
+                  <span><b>Phone</b>+91 75899 78904</span></a></li>
+              <li><a href="https://www.linkedin.com/in/keshavgoyalpec/" target="_blank" rel="noopener">
+                  <svg class="ic">
+                    <use href="#i-linkedin" />
+                  </svg>
+                  <span><b>LinkedIn</b>linkedin.com/in/keshavgoyalpec</span></a></li>
+              <li><a href="https://github.com/keshav-pec" target="_blank" rel="noopener">
+                  <svg class="ic">
+                    <use href="#i-github" />
+                  </svg>
+                  <span><b>GitHub</b>github.com/keshav-pec</span></a></li>
+              <li><span class="static"><svg class="ic">
+                    <use href="#i-pin" />
+                  </svg>
+                  <span><b>Location</b>Patiala, Punjab, India</span></span></li>
+            </ul>
+          </div>
+
+          <form class="contact-form reveal" id="contact-form" novalidate>
+            <div class="field">
+              <label for="f-name">Name</label>
+              <input id="f-name" name="name" type="text" autocomplete="name" required />
             </div>
-            <button type="submit" class="btn btn-primary">
-              Send Message
+            <div class="field">
+              <label for="f-email">Email</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" required />
+            </div>
+            <div class="field">
+              <label for="f-subject">Subject</label>
+              <input id="f-subject" name="subject" type="text" required />
+            </div>
+            <div class="field">
+              <label for="f-message">Message</label>
+              <textarea id="f-message" name="message" rows="5" required></textarea>
+            </div>
+            <button class="btn btn-primary" type="submit">
+              <svg class="ic">
+                <use href="#i-send" />
+              </svg> Send message
             </button>
+            <p class="form-note" id="form-note" role="status"></p>
           </form>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Footer -->
+  </main>
+
   <footer class="footer">
-    <div class="container footer-content">
-      <p class="copyright">
-        &copy; 2026 Keshav Goyal. All rights reserved. | Last Updated: July
-        2026
-      </p>
+    <div class="wrap footer-inner">
+      <p>&copy; <span id="year">2026</span> Keshav Goyal</p>
+      <p class="muted">Last Updated: September 2026</p>
+      <div class="footer-social">
+        <a href="https://github.com/keshav-pec" target="_blank" rel="noopener" aria-label="GitHub"><svg class="ic">
+            <use href="#i-github" />
+          </svg></a>
+        <a href="https://www.linkedin.com/in/keshavgoyalpec/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg
+            class="ic">
+            <use href="#i-linkedin" />
+          </svg></a>
+        <a href="mailto:keshavpec24@gmail.com" aria-label="Email"><svg class="ic">
+            <use href="#i-mail" />
+          </svg></a>
+      </div>
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <button class="to-top" id="to-top" aria-label="Back to top">
+    <svg class="ic">
+      <use href="#i-arrow-up" />
+    </svg>
+  </button>
+
+  <script src="script.js" defer></script>
 </body>
 
 </html>

@@ -1,487 +1,500 @@
-// ===============================================
-// ANIMATED CODE BACKGROUND (CANVAS) — PERF OPTIMISED
-// ===============================================
+/* ==========================================================================
+   Keshav Goyal — portfolio
+   --------------------------------------------------------------------------
+   Design rule: nothing runs on every scroll frame.
+   • Scroll-linked visuals are CSS scroll-driven animations (compositor).
+   • State changes (sticky nav, active link, back-to-top, reveals) come from
+     IntersectionObserver callbacks, which fire only at thresholds.
+   • The rAF loop below exists ONLY as a fallback for browsers without
+     scroll-driven animations, and it writes `translate` and one custom
+     property — never a layout-triggering value.
+   ========================================================================== */
+(() => {
+  "use strict";
 
-(function () {
-  const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
-  ).matches;
+  const root = document.documentElement;
+  const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const reduced = mqReduce.matches;
 
-  // ── Cursor trail (desktop only, CSS-transitioned, no RAF per dot) ──────────
-  const supportsFinePointer = window.matchMedia(
-    "(hover: hover) and (pointer: fine)",
-  ).matches;
-  if (supportsFinePointer && !prefersReducedMotion) {
-    const TRAIL = 8;
-    const dots = [];
-    const pos = [];
-    let mx = window.innerWidth / 2,
-      my = window.innerHeight / 2;
-    const interactable =
-      "a, button, .btn, .nav-link, .project-link, .skill-tag, .nav-social, .hamburger, input, textarea";
+  const SDT =
+    typeof CSS !== "undefined" &&
+    typeof CSS.supports === "function" &&
+    CSS.supports("animation-timeline", "view()");
 
-    for (let i = 0; i < TRAIL; i++) {
-      const d = document.createElement("span");
-      d.className = "cursor-trail-dot";
-      const size = Math.max(6, 18 - i * 1.5);
-      d.style.cssText = `width:${size}px;height:${size}px;opacity:${Math.max(0.15, 0.85 - i * 0.1)};transition:transform 0.25s ease,filter 0.2s ease;`;
-      document.body.appendChild(d);
-      dots.push(d);
-      pos.push({ x: mx, y: my });
+  if (!SDT) root.classList.add("no-sdt");
+
+  /* ======================================================================
+     0. THEME TOGGLE
+     data-theme is already set on <html> by the inline script in <head>
+     (before first paint) — this just wires up the button, persistence, and
+     keeps the two theme-color <meta> tags in sync.
+     ====================================================================== */
+  const themeBtn = document.getElementById("theme-toggle");
+  const metaTheme = document.getElementById("meta-theme-color");
+  const THEME_COLOR = { light: "#eaf0f9", dark: "#05070f" };
+  const mqDark = matchMedia("(prefers-color-scheme: dark)");
+
+  const applyTheme = (theme) => {
+    root.setAttribute("data-theme", theme);
+    if (metaTheme) metaTheme.content = THEME_COLOR[theme];
+    if (themeBtn) {
+      themeBtn.setAttribute(
+        "aria-label",
+        theme === "dark" ? "Switch to light theme" : "Switch to dark theme",
+      );
     }
+  };
 
-    let trailRafId = null;
-    let isMoving = false;
+  if (themeBtn) {
+    themeBtn.addEventListener("click", () => {
+      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      try {
+        localStorage.setItem("theme", next);
+      } catch (e) {}
+      applyTheme(next);
+    });
+  }
+  // sync the toggle's own label with whatever the inline head script decided
+  applyTheme(root.getAttribute("data-theme") || "light");
 
-    function animateTrail() {
-      let dx = mx - pos[0].x;
-      let dy = my - pos[0].y;
-      pos[0].x += dx * 0.32;
-      pos[0].y += dy * 0.32;
-      let maxDistSq = dx * dx + dy * dy;
+  // if the user has never chosen explicitly, keep following the OS
+  mqDark.addEventListener("change", (e) => {
+    let stored = null;
+    try {
+      stored = localStorage.getItem("theme");
+    } catch (err) {}
+    if (!stored) applyTheme(e.matches ? "dark" : "light");
+  });
 
-      for (let i = 1; i < TRAIL; i++) {
-        let dxi = pos[i - 1].x - pos[i].x;
-        let dyi = pos[i - 1].y - pos[i].y;
-        pos[i].x += dxi * 0.36;
-        pos[i].y += dyi * 0.36;
-        maxDistSq = Math.max(maxDistSq, dxi * dxi + dyi * dyi);
-      }
+  /* ======================================================================
+     1. NAVIGATION
+     ====================================================================== */
+  const nav = document.getElementById("nav");
+  const burger = document.getElementById("burger");
+  const menu = document.getElementById("nav-menu");
 
-      dots.forEach((d, i) => {
-        d.style.left = pos[i].x + "px";
-        d.style.top = pos[i].y + "px";
-        d.classList.add("active");
-      });
+  const scrim = document.createElement("div");
+  scrim.className = "nav-scrim";
+  scrim.hidden = true;
+  nav.after(scrim);
 
-      if (!isMoving && maxDistSq < 0.1) {
-        trailRafId = null;
-        return;
-      }
-      trailRafId = requestAnimationFrame(animateTrail);
+  const setMenu = (open) => {
+    nav.classList.toggle("is-open", open);
+    scrim.classList.toggle("is-on", open);
+    scrim.hidden = !open;
+    document.body.classList.toggle("is-locked", open);
+    burger.setAttribute("aria-expanded", String(open));
+    burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  };
+
+  burger.addEventListener("click", () =>
+    setMenu(!nav.classList.contains("is-open")),
+  );
+  scrim.addEventListener("click", () => setMenu(false));
+  menu.addEventListener("click", (e) => {
+    if (e.target.closest("a")) setMenu(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && nav.classList.contains("is-open")) {
+      setMenu(false);
+      burger.focus();
     }
+  });
 
-    window.addEventListener(
-      "mousemove",
-      (e) => {
-        mx = e.clientX;
-        my = e.clientY;
-        isMoving = true;
-        clearTimeout(window.mouseStopTimer);
-        window.mouseStopTimer = setTimeout(() => (isMoving = false), 50);
-        if (!trailRafId) trailRafId = requestAnimationFrame(animateTrail);
+  /* ---- sticky nav + back-to-top: one observer, no scroll listener ---- */
+  const toTop = document.getElementById("to-top");
+  const sentinel = document.getElementById("top-sentinel");
+
+  new IntersectionObserver(
+    ([entry]) => {
+      const past = !entry.isIntersecting;
+      nav.classList.toggle("is-stuck", past);
+      toTop.classList.toggle("is-on", past);
+    },
+    { threshold: 0 },
+  ).observe(sentinel);
+
+  toTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+  });
+
+  /* ---- active link: observe sections, pick the topmost visible one ---- */
+  const links = [...document.querySelectorAll(".nav-link")];
+  const linkFor = new Map(
+    links.map((a) => [a.getAttribute("href").slice(1), a]),
+  );
+  const sections = [...document.querySelectorAll("main section[id]")].filter(
+    (s) => linkFor.has(s.id) || s.id === "home",
+  );
+  const visible = new Set();
+
+  const syncActive = () => {
+    let best = null;
+    for (const s of sections) {
+      if (visible.has(s.id) && (!best || s.offsetTop < best.offsetTop)) best = s;
+    }
+    const id = best ? best.id : null;
+    for (const a of links) a.classList.toggle("is-active", a.dataset.id === id);
+  };
+
+  for (const a of links) a.dataset.id = a.getAttribute("href").slice(1);
+
+  const sectionObs = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) visible.add(e.target.id);
+        else visible.delete(e.target.id);
+      }
+      syncActive();
+    },
+    { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
+  );
+  sections.forEach((s) => sectionObs.observe(s));
+
+  /* ======================================================================
+     2. REVEALS — only needed when the browser lacks scroll-driven animation
+     ====================================================================== */
+  if (!SDT && !reduced) {
+    const revealObs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          e.target.classList.add("is-in");
+          revealObs.unobserve(e.target);
+        }
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
+    );
+    document.querySelectorAll(".reveal").forEach((el) => revealObs.observe(el));
+  } else if (!SDT) {
+    document
+      .querySelectorAll(".reveal")
+      .forEach((el) => el.classList.add("is-in"));
+  }
+
+  /* ---- reveal safety net -------------------------------------------------
+     A scroll-driven reveal only plays once its element enters the viewport.
+     Anything already on screen at load would therefore sit at opacity 0 until
+     the user scrolls — which on a very tall viewport (or a zoomed-out window)
+     means visibly blank sections. Mark those elements as already seen. Runs
+     once at load and again if the window grows; O(n) over ~40 nodes. */
+  if (SDT) {
+    const revealEls = [...document.querySelectorAll(".reveal")];
+    let seenTo = 0;
+
+    const markSeen = () => {
+      const limit = window.innerHeight;
+      if (limit <= seenTo) return;
+      seenTo = limit;
+      for (const el of revealEls) {
+        if (el.dataset.seen) continue;
+        if (el.getBoundingClientRect().top + window.scrollY < limit) {
+          el.dataset.seen = "1";
+        }
+      }
+    };
+
+    markSeen();
+    let resizeTimer;
+    addEventListener(
+      "resize",
+      () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(markSeen, 200);
       },
       { passive: true },
     );
-    document.addEventListener("mouseover", (e) => {
-      if (e.target.closest(interactable))
-        dots.forEach((d) => d.classList.add("hover"));
-    });
-    document.addEventListener("mouseout", (e) => {
-      if (e.target.closest(interactable))
-        dots.forEach((d) => d.classList.remove("hover"));
-    });
-    document.addEventListener("mouseleave", () =>
-      dots.forEach((d) => d.classList.remove("active", "hover")),
+  }
+
+  /* ======================================================================
+     3. PARALLAX FALLBACK
+     Runs only without scroll-driven animations. A single rAF, scheduled by
+     a passive scroll listener, writing `translate` on at most 6 elements —
+     and only on the in-flow ones currently intersecting the viewport.
+     ====================================================================== */
+  if (!SDT && !reduced) {
+    const bgLayers = [...document.querySelectorAll("[data-par-bg]")].map(
+      (el) => ({ el, k: parseFloat(el.dataset.parBg) * -2.05 }),
     );
-    document.addEventListener("mouseenter", () =>
-      dots.forEach((d) => d.classList.add("active")),
-    );
-    animateTrail();
-  }
-
-  // ── Canvas falling-code background ──────────────────────────────────────────
-  const canvas = document.getElementById("codeCanvas");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-
-  function resizeCanvas() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-  }
-  resizeCanvas();
-  let resizeTick = null;
-  window.addEventListener(
-    "resize",
-    () => {
-      if (resizeTick) cancelAnimationFrame(resizeTick);
-      resizeTick = requestAnimationFrame(() => {
-        resizeCanvas();
-        resizeTick = null;
-      });
-    },
-    { passive: true },
-  );
-
-  const snippets = [
-    "< />",
-    "</br>",
-    "const",
-    "async",
-    "await",
-    "class",
-    "return",
-    "import",
-    "React.js",
-    "Node.js",
-    "Java",
-    "MongoDB",
-    "GenAI",
-    "VectorDB",
-    "TailwindCSS",
-    "WebRTC",
-    "Docker",
-    "GitHub",
-    "int[n]",
-    "ArrayList<Integer>",
-    "for(int i=0;...)",
-    "HashMap<>()",
-    "HashSet<>",
-    "StringBuilder()",
-    "PriorityQueue<>",
-    "filter()",
-    "useState",
-    "&&",
-  ];
-  // Pre-compute rgba strings — no object spread per frame
-  const colorsRgba = [
-    "rgba(255,255,255,",
-    "rgba(191,219,254,",
-    "rgba(147,197,253,",
-    "rgba(96,165,250,",
-    "rgba(37,99,235,",
-    "rgba(148,163,184,",
-  ];
-
-  class Particle {
-    constructor() {
-      this.init(true);
-    }
-    init(randomY = false) {
-      this.x = Math.random() * canvas.width;
-      this.y = randomY ? Math.random() * canvas.height : -40;
-      this.speed = 0.4 + Math.random() * 1.6;
-      this.text = snippets[Math.floor(Math.random() * snippets.length)];
-      this.size = 13 + Math.random() * 8;
-      this.color = colorsRgba[Math.floor(Math.random() * colorsRgba.length)];
-      this.opacity = 0.22 + Math.random() * 0.32;
-      this.rot = (Math.random() - 0.5) * 0.18;
-    }
-    update() {
-      this.y += this.speed;
-      if (this.y > canvas.height + 40) this.init();
-    }
-    draw() {
-      ctx.save();
-      ctx.translate(this.x, this.y);
-      ctx.rotate(this.rot);
-      ctx.font = `bold ${this.size}px 'Courier New', monospace`;
-      // NO shadowBlur — it's extremely expensive on GPU
-      ctx.fillStyle = this.color + this.opacity + ")";
-      ctx.fillText(this.text, 0, 0);
-      ctx.restore();
-    }
-  }
-
-  const COUNT = prefersReducedMotion ? 18 : 40; // was 72 — halved for perf
-  const particles = Array.from({ length: COUNT }, () => new Particle());
-
-  let rafId = null;
-  function animate() {
-    ctx.fillStyle = "rgba(5,7,13,0.38)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    for (const p of particles) {
-      p.update();
-      p.draw();
-    }
-    rafId = requestAnimationFrame(animate);
-  }
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    } else if (!rafId) animate();
-  });
-  animate();
-})();
-
-// ===============================================
-// NAVIGATION MENU TOGGLE
-// ===============================================
-
-const hamburger = document.querySelector(".hamburger");
-const navMenu = document.querySelector(".nav-menu");
-const navLinks = document.querySelectorAll(".nav-link");
-
-hamburger.addEventListener("click", () => {
-  hamburger.classList.toggle("active");
-  navMenu.classList.toggle("active");
-});
-
-navLinks.forEach((link) => {
-  link.addEventListener("click", () => {
-    hamburger.classList.remove("active");
-    navMenu.classList.remove("active");
-  });
-});
-
-// ===============================================
-// SCROLL ORCHESTRATOR — single rAF for all scroll work
-// ===============================================
-
-const navbar = document.querySelector(".navbar");
-const heroContent = document.querySelector(".hero-content");
-const sections = Array.from(document.querySelectorAll("section"));
-let scrollTopBtn = null;
-let sectionPos = [];
-
-// Scroll-progress bar
-const scrollBar = document.createElement("div");
-scrollBar.className = "scroll-progress";
-document.body.appendChild(scrollBar);
-
-function measureSections() {
-  sectionPos = sections.map((s) => ({
-    id: s.getAttribute("id"),
-    top: s.offsetTop - 120,
-  }));
-}
-
-let ticking = false;
-function onScroll() {
-  if (ticking) return;
-  ticking = true;
-  requestAnimationFrame(() => {
-    const sy = window.scrollY;
-
-    // Navbar glass intensity
-    const glassAmount = Math.min(sy / 120, 1);
-    navbar.style.background = `rgba(255,255,255,${0.08 + glassAmount * 0.1})`;
-    navbar.style.boxShadow =
-      glassAmount > 0.4 ? "0 8px 32px rgba(37,99,235,0.18)" : "none";
-
-    // Scroll progress bar — width only, GPU-cheap
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    scrollBar.style.width = (max > 0 ? (sy / max) * 100 : 0) + "%";
-
-    // Active nav link
-    let current = sectionPos[0]?.id || "";
-    for (const s of sectionPos) {
-      if (sy >= s.top) current = s.id;
-    }
-    navLinks.forEach((l) =>
-      l.classList.toggle("active", l.getAttribute("href") === `#${current}`),
+    const flowLayers = [...document.querySelectorAll(".par[data-par]")].map(
+      (el) => ({
+        el,
+        d: parseFloat(getComputedStyle(el).getPropertyValue("--par-d")) || 28,
+        on: false,
+      }),
     );
 
-    // Hero parallax — composited translate3d only (no opacity change = no repaint)
-    if (heroContent && sy < window.innerHeight) {
-      const shift = Math.min(sy * 0.14, 80);
-      heroContent.style.transform = `translate3d(0,${shift}px,0)`;
-      // Fade hero text gently
-      heroContent.style.opacity = Math.max(0, 1 - sy / 700).toFixed(3);
-    }
-
-    // Scroll-to-top button
-    if (scrollTopBtn) scrollTopBtn.style.opacity = sy > 280 ? "1" : "0";
-
-    ticking = false;
-  });
-}
-
-window.addEventListener("scroll", onScroll, { passive: true });
-window.addEventListener(
-  "resize",
-  () => {
-    measureSections();
-    onScroll();
-  },
-  { passive: true },
-);
-
-measureSections();
-onScroll();
-
-// ===============================================
-// SMOOTH ANCHOR SCROLLING
-// ===============================================
-
-document.querySelectorAll('a[href^="#"]').forEach((a) => {
-  a.addEventListener("click", (e) => {
-    const target = document.querySelector(a.getAttribute("href"));
-    if (!target) return;
-    e.preventDefault();
-    window.scrollTo({ top: target.offsetTop - 70, behavior: "smooth" });
-  });
-});
-
-// ===============================================
-// SUBTLE TILT — CSS custom property approach (no JS per frame)
-// ===============================================
-if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-  document.querySelectorAll(".project-card").forEach((card) => {
-    card.addEventListener("mouseenter", () =>
-      card.classList.add("tilt-active"),
+    const flowObs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const rec = flowLayers.find((f) => f.el === e.target);
+          if (rec) rec.on = e.isIntersecting;
+        }
+        schedule();
+      },
+      { rootMargin: "20% 0px 20% 0px" },
     );
-    card.addEventListener("mousemove", (e) => {
-      const r = card.getBoundingClientRect();
-      const rx = ((e.clientY - r.top) / r.height - 0.5) * -6;
-      const ry = ((e.clientX - r.left) / r.width - 0.5) * 6;
-      card.style.setProperty("--rx", rx.toFixed(1) + "deg");
-      card.style.setProperty("--ry", ry.toFixed(1) + "deg");
-    });
-    card.addEventListener("mouseleave", () => {
-      card.classList.remove("tilt-active");
-      card.style.removeProperty("--rx");
-      card.style.removeProperty("--ry");
-    });
-  });
-}
+    flowLayers.forEach((f) => flowObs.observe(f.el));
 
-// Flip logic for skill cards (click to lock flipped state)
-document.querySelectorAll(".skill-category").forEach((card) => {
-  card.addEventListener("click", () => {
-    card.classList.toggle("flipped");
-  });
-});
+    let queued = false;
 
-// ===============================================
-// TYPING EFFECT — HERO SUBTITLE
-// ===============================================
+    const frame = () => {
+      queued = false;
+      const vh = window.innerHeight;
+      const max = root.scrollHeight - vh;
+      const progress = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
 
-const subtitleEl = document.querySelector(".hero-subtitle");
-const subtitles = [
-  "Full Stack Developer",
-  "CSE Student @PEC",
-  "Problem Solver",
-  "Open Source Contributor",
-];
-let si = 0,
-  ci = 0,
-  deleting = false,
-  delay = 100,
-  isHeroVisible = true;
+      root.style.setProperty("--p", progress.toFixed(4));
 
-function type() {
-  if (!isHeroVisible || !subtitleEl) return;
-  const cur = subtitles[si];
-  subtitleEl.textContent = deleting
-    ? cur.substring(0, --ci)
-    : cur.substring(0, ++ci);
+      for (const l of bgLayers) {
+        l.el.style.transform = `translate3d(0,${(progress * l.k * vh).toFixed(1)}px,0)`;
+      }
+      for (const l of flowLayers) {
+        if (!l.on) continue;
+        const r = l.el.getBoundingClientRect();
+        const p = (r.top + r.height / 2) / vh;
+        l.el.style.translate = `0 ${((p - 0.5) * 2 * l.d).toFixed(1)}px`;
+      }
+    };
 
-  delay = deleting ? 65 : 140;
-  if (!deleting && ci === cur.length) {
-    delay = 2500;
-    deleting = true;
-  } else if (deleting && ci === 0) {
-    deleting = false;
-    si = (si + 1) % subtitles.length;
-    delay = 600;
-  }
-
-  if (isHeroVisible) setTimeout(type, delay);
-}
-
-const heroObs = new IntersectionObserver((entries) => {
-  isHeroVisible = entries[0].isIntersecting;
-  if (isHeroVisible) type();
-});
-const heroNode = document.querySelector(".hero");
-if (heroNode) heroObs.observe(heroNode);
-
-window.addEventListener("load", () => {
-  if (isHeroVisible) setTimeout(type, 900);
-});
-
-// ===============================================
-// CONTACT FORM
-// ===============================================
-
-const contactForm = document.getElementById("contactForm");
-contactForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const subject = document.getElementById("subject").value;
-  const message = document.getElementById("message").value;
-  const mailto = `mailto:keshavpec24@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
-  window.location.href = mailto;
-  contactForm.reset();
-});
-
-// ===============================================
-// SCROLL-TO-TOP BUTTON
-// ===============================================
-
-scrollTopBtn = document.createElement("button");
-scrollTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
-scrollTopBtn.className = "scroll-top-btn";
-scrollTopBtn.setAttribute("aria-label", "Back to top");
-document.body.appendChild(scrollTopBtn);
-
-scrollTopBtn.addEventListener("click", () =>
-  window.scrollTo({ top: 0, behavior: "smooth" }),
-);
-
-// ===============================================
-// PARALLAX FALLBACK (Firefox & older browsers)
-// Uses JS only when CSS scroll-driven is unsupported
-// ===============================================
-
-if (!CSS.supports("(animation-timeline: scroll()) and (animation-range: 0%)")) {
-  const wrapper = document.querySelector(".parallax-wrapper");
-  const layers = document.querySelectorAll(".parallax-layer");
-  if (wrapper && layers.length) {
-    const depthValues = [0.12, 0.28]; // match data-depth attrs
-
-    let parallaxTicking = false;
-    function updateParallax() {
-      const sy = window.scrollY;
-      const rect = wrapper.getBoundingClientRect();
-      const wrapperTop = rect.top + sy;
-      const wrapperH = wrapper.offsetHeight;
-      const winH = window.innerHeight;
-
-      if (sy >= wrapperTop - winH && sy <= wrapperTop + wrapperH) {
-        const progress = (sy - (wrapperTop - winH)) / (wrapperH + winH);
-        layers.forEach((layer, i) => {
-          const maxPx = depthValues[i] * 160;
-          const ty = maxPx * (0.5 - progress);
-          layer.style.transform = `translateY(${ty.toFixed(2)}px)`;
-        });
+    function schedule() {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(frame);
       }
     }
 
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            window.addEventListener("scroll", onParallaxScroll, {
-              passive: true,
-            });
-          } else {
-            window.removeEventListener("scroll", onParallaxScroll);
-          }
-        });
-      },
-      { threshold: 0 },
-    );
-
-    function onParallaxScroll() {
-      if (parallaxTicking) return;
-      parallaxTicking = true;
-      requestAnimationFrame(() => {
-        updateParallax();
-        parallaxTicking = false;
-      });
-    }
-
-    obs.observe(wrapper);
-    updateParallax();
+    addEventListener("scroll", schedule, { passive: true });
+    addEventListener("resize", schedule, { passive: true });
+    frame();
   }
-}
 
-console.log(
-  "%c🚀 Portfolio loaded!",
-  "color:#2563eb;font-size:14px;font-weight:700;",
-);
+  /* ======================================================================
+     4. AMBIENT CODE RAIN — desktop only, pure CSS animation once built
+     ====================================================================== */
+  const rain = document.getElementById("rain");
+  if (rain && !reduced && innerWidth >= 900 && matchMedia("(hover: hover)").matches) {
+    // Real (if generic) functions across the stack in the Skills section, so
+    // the backdrop reads as actual programs rather than a word cloud of
+    // disconnected lines — own boilerplate, not copied from any project.
+    // Each block is a small, coherent, self-contained function so the rain
+    // reads like someone scrolled through a real file.
+    const codeBlocks = [
+      [
+        "async function fetchTasks(userId) {",
+        "  const res = await fetch(`/api/tasks?user=${userId}`);",
+        "  if (!res.ok) throw new Error(res.statusText);",
+        "  return res.json();",
+        "}",
+      ],
+      [
+        "function useDebounce(value, delay) {",
+        "  const [debounced, setDebounced] = useState(value);",
+        "  useEffect(() => {",
+        "    const t = setTimeout(() => setDebounced(value), delay);",
+        "    return () => clearTimeout(t);",
+        "  }, [value, delay]);",
+        "  return debounced;",
+        "}",
+      ],
+      [
+        "router.get(\"/api/tasks\", async (req, res) => {",
+        "  const tasks = await Task.find({ owner: req.user.id });",
+        "  res.json(tasks);",
+        "});",
+      ],
+      [
+        "def train(model, data, epochs=10):",
+        "    for epoch in range(epochs):",
+        "        for x, y in data:",
+        "            loss = model.step(x, y)",
+        "    return model",
+      ],
+      [
+        "class Retriever(BaseModel):",
+        "    def query(self, text, k=5):",
+        "        vector = embed(text)",
+        "        return self.index.search(vector, k)",
+      ],
+      [
+        "public class Solver {",
+        "  static int[] dp = new int[100001];",
+        "  static int fib(int n) {",
+        "    if (n <= 1) return n;",
+        "    if (dp[n] != 0) return dp[n];",
+        "    return dp[n] = fib(n - 1) + fib(n - 2);",
+        "  }",
+        "}",
+      ],
+      [
+        "function binarySearch(arr, target) {",
+        "  let left = 0, right = arr.length - 1;",
+        "  while (left <= right) {",
+        "    const mid = (left + right) >> 1;",
+        "    if (arr[mid] === target) return mid;",
+        "    arr[mid] < target ? (left = mid + 1) : (right = mid - 1);",
+        "  }",
+        "  return -1;",
+        "}",
+      ],
+      [
+        "SELECT u.id, u.email, COUNT(o.id) AS orders",
+        "FROM users u",
+        "LEFT JOIN orders o ON o.user_id = u.id",
+        "GROUP BY u.id",
+        "ORDER BY orders DESC;",
+      ],
+      [
+        "socket.on(\"connect\", () => {",
+        "  const pc = new RTCPeerConnection(config);",
+        "  pc.addTrack(track, stream);",
+        "  channel.send(JSON.stringify({ type: \"join\" }));",
+        "});",
+      ],
+      [
+        "export default async function handler(req, res) {",
+        "  const results = await index.query(vector, 5);",
+        "  return NextResponse.json({ results });",
+        "}",
+      ],
+      [
+        "FROM node:20-alpine",
+        "WORKDIR /app",
+        "COPY package*.json ./",
+        "RUN npm ci --production",
+        "CMD [\"node\", \"server.js\"]",
+      ],
+      [
+        "@app.get(\"/health\")",
+        "def health_check():",
+        "    if __name__ == \"__main__\":",
+        "        uvicorn.run(app, host=\"0.0.0.0\")",
+      ],
+    ];
+    // Minimal syntax colouring — keywords bold in the accent blue, string
+    // literals in gold — so the rain reads like an actual editor instead of
+    // a flat wall of one-tone text. `<b>`/`<i>` are just the shortest tags;
+    // styled in CSS, not used for their default weight/italic.
+    const KEYWORDS = new Set([
+      "const", "let", "var", "async", "await", "function", "return",
+      "import", "from", "export", "default", "class", "def", "public",
+      "new", "for", "while", "if", "else", "in", "as", "int", "void",
+      "SELECT", "FROM", "WHERE", "CREATE", "INDEX", "ON", "RUN",
+    ]);
+    const KW_PATTERN = new RegExp("\\b(" + [...KEYWORDS].join("|") + ")\\b", "g");
+    const escapeHtml = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const highlight = (line) =>
+      escapeHtml(line)
+        .replace(/"[^"]*"/g, (m) => `<i>${m}</i>`)
+        .replace(KW_PATTERN, "<b>$1</b>");
+
+    // Walk the blocks in shuffled, function-sized chunks (with a blank line
+    // between) rather than picking random single lines, so the column reads
+    // as scrolling through real functions instead of a shuffled word salad.
+    const shuffledBlocks = () => {
+      const arr = codeBlocks.slice();
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = (Math.random() * (i + 1)) | 0;
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    };
+    const buildLines = (target) => {
+      const out = [];
+      while (out.length < target) {
+        for (const block of shuffledBlocks()) {
+          out.push(...block, "");
+          if (out.length >= target) break;
+        }
+      }
+      return out.slice(0, target).map(highlight).join("\n");
+    };
+
+    const lineH = 26;
+    const lines = Math.ceil(Math.max(innerHeight, 900) / lineH) + 2;
+    // A single, left-aligned column, wide enough that whole lines of real
+    // functions stay legible rather than being clipped after a few words.
+    const half = buildLines(lines);
+    const span = document.createElement("span");
+    span.className = "rain-col";
+    span.style.cssText = "--l:4%;--d:52s;--delay:0s";
+    span.innerHTML = half + "\n" + half;
+    rain.appendChild(span);
+  }
+
+  /* ======================================================================
+     5. HERO TYPING — a timer, paused whenever the hero is off screen
+     ====================================================================== */
+  const typed = document.getElementById("typed");
+  if (typed) {
+    const roles = [
+      "CSE @ PEC Chandigarh",
+      "Full Stack Developer",
+      "Competitive Programmer",
+      "Open Source Contributor"
+    ];
+
+    if (reduced) {
+      typed.textContent = roles[0];
+    } else {
+      let r = 0,
+        c = 0,
+        del = false,
+        timer = null,
+        live = true;
+
+      const tick = () => {
+        const word = roles[r];
+        c += del ? -1 : 1;
+        typed.textContent = word.slice(0, c);
+
+        let wait = del ? 45 : 95;
+        if (!del && c === word.length) {
+          wait = 2200;
+          del = true;
+        } else if (del && c === 0) {
+          del = false;
+          r = (r + 1) % roles.length;
+          wait = 350;
+        }
+        if (live) timer = setTimeout(tick, wait);
+      };
+
+      new IntersectionObserver(([e]) => {
+        live = e.isIntersecting;
+        clearTimeout(timer);
+        if (live) timer = setTimeout(tick, 400);
+      }).observe(document.querySelector(".hero"));
+    }
+  }
+
+  /* ======================================================================
+     6. CONTACT FORM — no backend on Pages, so compose a mail draft
+     ====================================================================== */
+  const form = document.getElementById("contact-form");
+  if (form) {
+    const note = document.getElementById("form-note");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const d = new FormData(form);
+      const body = `Name: ${d.get("name")}\nEmail: ${d.get("email")}\n\n${d.get("message")}`;
+      location.href =
+        "mailto:keshavpec24@gmail.com" +
+        `?subject=${encodeURIComponent(d.get("subject") || "Portfolio enquiry")}` +
+        `&body=${encodeURIComponent(body)}`;
+
+      note.textContent = "Opening your mail app…";
+      setTimeout(() => {
+        note.textContent = "";
+        form.reset();
+      }, 4000);
+    });
+  }
+
+  /* ======================================================================
+     7. MISC
+     ====================================================================== */
+  document.getElementById("year").textContent = new Date().getFullYear();
+})();
