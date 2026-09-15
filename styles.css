@@ -1625,17 +1625,29 @@ body {
 
 @media (max-width: 940px) {
   .hero-grid {
-    grid-template-columns: 1fr;
-    text-align: left;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: clamp(20px, 4vw, 40px);
   }
-  .hero-visual { grid-row: 1; width: min(230px, 56vw); justify-self: start; }
-  .chip--1 { top: 2%; left: auto; right: -34%; }
-  .chip--2 { top: 45%; right: -46%; }
-  .chip--3 { bottom: 2%; left: auto; right: -24%; }
+  .hero-visual { width: min(280px, 36vw); justify-self: end; }
+  .chip--1 { top: 9%; left: -13%; }
+  .chip--2 { top: 46%; right: -12%; }
+  .chip--3 { bottom: 7%; left: -8%; }
   .hero { padding-block: calc(var(--nav-h) + 28px) 84px; }
   .about-grid,
   .contact-grid { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 620px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+  .hero-visual { grid-row: 1; width: min(200px, 54vw); justify-self: center; margin-inline: auto; }
+  .chip--1 { top: 9%; left: -13%; right: auto; }
+  .chip--2 { top: 46%; right: -12%; }
+  .chip--3 { bottom: 7%; left: -8%; right: auto; }
+}
+
 
 /* ---------- mobile nav ---------- */
 @media (max-width: 860px) {
@@ -1753,11 +1765,11 @@ body {
 }
 
 @media (max-width: 520px) {
-  .hero-visual { width: min(190px, 50vw); }
+  .hero-visual { width: min(170px, 50vw); }
   .chip { font-size: 0.72rem; padding: 6px 11px; }
-  .chip--1 { top: 0; left: auto; right: -46%; }
-  .chip--2 { top: 44%; right: -58%; }
-  .chip--3 { bottom: 0; left: auto; right: -30%; }
+  .chip--1 { top: 9%; left: -13%; right: auto; }
+  .chip--2 { top: 46%; right: -12%; }
+  .chip--3 { bottom: 7%; left: -8%; right: auto; }
   .timeline { padding-left: 24px; }
   .tl-dot { left: -24px; }
   .skill-card,
