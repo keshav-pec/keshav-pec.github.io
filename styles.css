@@ -6,8 +6,11 @@
       WebGL lunar surface (with a plain CSS ground standing in until it is
       ready) and a veil that keeps text over the ground readable. Content
       scrolls over it; scrolling walks you across the surface.
-   2. Only transform / opacity / clip-path are ever animated. The ground is a
-      shader redrawn from a single rAF loop in script.js — never layout.
+   2. Only transform / translate / opacity / clip-path are ever animated. The
+      ground is a shader redrawn from a single rAF loop in script.js — never
+      layout. The same loop bends the content over the Moon's curve: it owns
+      the `transform` of every `.bend` block, which is why reveals and hovers
+      on those blocks use the separate `translate` property instead.
    3. Cards are tinted, not blurred: backdrop-filter over a canvas that
       repaints while you scroll is the classic way these sites end up janky.
       The nav bar is the one (small) exception.
@@ -166,6 +169,28 @@ a { color: inherit; text-decoration: none; }
   --footer-fade: rgba(5, 7, 13, 0.88);
   /* a soft dark halo around text that sits straight on the landscape */
   --text-halo: 0 1px 2px rgba(3, 4, 9, 0.75), 0 0 16px rgba(3, 4, 9, 0.7);
+
+  /* the rocket: hull left → right, trim (nose, fins, bezel), exhaust */
+  --rk-s1: #2c3554;
+  --rk-s2: #131829;
+  --rk-s3: #070a12;
+  --rk-t1: #fff7e0;
+  --rk-t2: #c9b684;
+  --rk-line: rgba(196, 209, 255, 0.34);
+  --rk-sheen: rgba(255, 255, 255, 0.13);
+  --rk-nozzle: #0a0d17;
+  --rk-f1: #fffaea;
+  --rk-f2: rgba(240, 222, 175, 0.9);
+  --rk-f3: rgba(183, 197, 255, 0);
+  --rk-core: #ffffff;
+  --rk-glow: rgba(240, 222, 175, 0.3);
+  --rk-halo: rgba(150, 175, 255, 0.16);
+  /* the asteroids: regolith greys, lit from the left like the ground */
+  --rock: #3a3b45;
+  --rock-lit: #585862;
+  --rock-shade: #1f2028;
+  --rock-pit: #17181e;
+  --rock-line: rgba(205, 214, 245, 0.4);
   /* a breath of film grain (opacity baked in): hides banding in the gradients */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .6  0 0 0 0 .6  0 0 0 0 .6  0 0 0 .054 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
@@ -213,6 +238,26 @@ a { color: inherit; text-decoration: none; }
   --vignette: rgba(150, 162, 182, 0.32);
   --footer-fade: rgba(223, 229, 238, 0.9);
   --text-halo: 0 0 14px rgba(236, 240, 246, 0.85);
+
+  --rk-s1: #ffffff;
+  --rk-s2: #f3f5f9;
+  --rk-s3: #c6cedb;
+  --rk-t1: #b9651c;
+  --rk-t2: #7b3a06;
+  --rk-line: rgba(20, 35, 75, 0.36);
+  --rk-sheen: rgba(255, 255, 255, 0.85);
+  --rk-nozzle: #3a435c;
+  --rk-f1: #fff3d6;
+  --rk-f2: rgba(240, 148, 52, 0.92);
+  --rk-f3: rgba(236, 110, 36, 0);
+  --rk-core: #fffaf0;
+  --rk-glow: rgba(240, 148, 52, 0.3);
+  --rk-halo: rgba(255, 255, 255, 0.55);
+  --rock: #eceef3;
+  --rock-lit: #ffffff;
+  --rock-shade: #cbd1dc;
+  --rock-pit: #bbc3d0;
+  --rock-line: rgba(20, 35, 75, 0.38);
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .6  0 0 0 0 .6  0 0 0 0 .6  0 0 0 .0315 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -401,13 +446,15 @@ main:focus,
 /* ==========================================================================
    REVEALS — only armed when JS is running
    ========================================================================== */
+/* `translate`, not `transform`: on the blocks that bend over the curve the
+   transform belongs to script.js, and the two must compose, not collide */
 .js .rv {
   opacity: 0;
-  transform: translate3d(0, 30px, 0);
-  transition: opacity 0.9s var(--ease-out), transform 1.2s var(--ease-out);
+  translate: 0 30px;
+  transition: opacity 0.9s var(--ease-out), translate 1.2s var(--ease-out);
   transition-delay: var(--d, 0ms);
 }
-.js .rv.in { opacity: 1; transform: none; }
+.js .rv.in { opacity: 1; translate: none; }
 
 /* moonrise: each word climbs out from behind its own horizon */
 .w {
@@ -437,7 +484,7 @@ main:focus,
   animation-delay: calc(var(--wi, 0) * 85ms + 60ms);
 }
 @keyframes hx-rise {
-  from { opacity: 0; transform: translate3d(0, 28px, 0); }
+  from { opacity: 0; translate: 0 28px; }
 }
 @keyframes hx-word {
   from { transform: translate3d(0, 118%, 0); }
@@ -445,7 +492,7 @@ main:focus,
 
 /* safety net: script.js never arrived */
 .reveal-all .rv,
-.reveal-all [data-split] .wi { opacity: 1 !important; transform: none !important; }
+.reveal-all [data-split] .wi { opacity: 1 !important; translate: none !important; transform: none !important; }
 
 /* ==========================================================================
    BUTTONS / SMALL PARTS
@@ -811,114 +858,173 @@ main:focus,
   color: var(--muted);
 }
 
-/* ---------- portrait, with two satellites in orbit ---------- */
-.hero-visual { justify-self: center; width: min(400px, 100%); }
+/* ---------- the rocket, and the asteroids around it ---------- */
+/* The width is also held to the viewport's height, so the whole craft stays
+   on the first screen of a short laptop display. */
+.hero-visual { justify-self: center; width: min(400px, 100%, calc((100vh - 230px) * 0.74)); }
 
-.orbit {
-  position: relative;
-  width: 100%;
+.craft { position: relative; width: 100%; aspect-ratio: 1000 / 1376; }
+
+.rocket {
+  position: absolute;
+  top: 0;
+  left: 7%;
+  width: 86%;
+  aspect-ratio: 300 / 480;
+  animation: rk-hover 6.5s ease-in-out infinite alternate;
+}
+/* a pool of light behind the hull lifts it off the black sky */
+.rocket::before {
+  content: "";
+  position: absolute;
+  inset: 6% -12% 14%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--rk-halo), transparent);
+}
+@keyframes rk-hover {
+  from { transform: translate3d(0, 6px, 0); }
+  to { transform: translate3d(0, -8px, 0); }
+}
+
+.rocket-hull { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+.rk-s1 { stop-color: var(--rk-s1); }
+.rk-s2 { stop-color: var(--rk-s2); }
+.rk-s3 { stop-color: var(--rk-s3); }
+.rk-t1 { stop-color: var(--rk-t1); }
+.rk-t2 { stop-color: var(--rk-t2); }
+.rk-f1 { stop-color: var(--rk-f1); }
+.rk-f2 { stop-color: var(--rk-f2); }
+.rk-f3 { stop-color: var(--rk-f3); }
+
+.rk-edge,
+.rk-seam,
+.rk-sheen,
+.rk-bezel,
+.rk-bezel-line { fill: none; }
+.rk-edge { stroke: var(--rk-line); stroke-width: 1.5; }
+.rk-seam { stroke: var(--rk-line); stroke-width: 1.5; }
+.rk-sheen { stroke: var(--rk-sheen); stroke-width: 7; stroke-linecap: round; }
+.rk-fin { stroke: var(--rk-line); stroke-width: 1; stroke-linejoin: round; }
+.rk-nozzle { fill: var(--rk-nozzle); stroke: var(--rk-line); stroke-width: 1; stroke-linejoin: round; }
+.rk-bezel { stroke-width: 9; }
+.rk-bezel-line { stroke: var(--rk-line); stroke-width: 1; }
+
+/* The exhaust is two small layers of its own, so its flicker is a pure
+   compositor animation and the hull never repaints. */
+.rocket-flame {
+  position: absolute;
+  left: 33.333%;
+  top: 81.667%;
+  width: 33.334%;
+  height: 18.75%;
+  overflow: visible;
+  transform-origin: 50% 5%;
+  animation: rk-burn 0.85s ease-in-out infinite alternate;
+}
+.rk-core { fill: var(--rk-core); opacity: 0.92; }
+@keyframes rk-burn {
+  from { transform: scale(1.03, 0.88); }
+  to { transform: scale(0.95, 1.1); }
+}
+.rocket-glow {
+  position: absolute;
+  left: 12%;
+  top: 73%;
+  width: 76%;
+  height: 30%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--rk-glow), transparent);
+  animation: rk-glow 2.6s ease-in-out infinite alternate;
+}
+@keyframes rk-glow {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+
+/* the porthole: a real <img>, laid over the bezel drawn in the hull */
+.porthole {
+  position: absolute;
+  left: 20%;
+  top: 25.833%;
+  width: 60%;
   aspect-ratio: 1;
-}
-.orbit-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid var(--line);
-  animation: spin 46s linear infinite;
-}
-.orbit-ring--a { inset: 4%; }
-.orbit-ring--b { inset: -1.5%; border-style: dashed; animation-duration: 90s; animation-direction: reverse; }
-.orbit-ring i {
-  position: absolute;
-  top: -4px;
-  left: 50%;
-  width: 7px;
-  height: 7px;
-  margin-left: -3.5px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 12px var(--accent);
-}
-.orbit-ring--b i { width: 5px; height: 5px; top: -3px; margin-left: -2.5px; background: var(--ink); box-shadow: none; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.portrait {
-  position: absolute;
-  inset: 9%;
   border-radius: 50%;
   overflow: hidden;
   background: var(--surface-solid);
-  box-shadow: 0 0 0 1px var(--line-strong), 0 0 80px -12px var(--btn-glow);
 }
-.portrait img { width: 100%; height: 100%; object-fit: cover; }
-
-.chip {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 13px;
-  border-radius: 999px;
-  border: 1px solid var(--line-strong);
-  background: var(--surface-solid);
-  color: var(--ink);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  box-shadow: var(--card-shadow);
-  animation: float 7s ease-in-out infinite;
-}
-.chip .ic { color: var(--accent); }
-.chip--1 { top: 8%; left: -4%; }
-.chip--2 { top: 46%; right: -8%; animation-delay: -2.4s; }
-.chip--3 { bottom: 6%; left: 2%; animation-delay: -4.6s; }
-@keyframes float { 50% { transform: translateY(-9px); } }
-
-.scroll-cue {
-  position: absolute;
-  left: 50%;
-  bottom: 26px;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--font-mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-  transition: color 0.3s;
-}
-.scroll-cue:hover { color: var(--ink); }
-/* it sits on the ground, so the label gets a small plate of its own */
-.scroll-cue span {
-  padding: 7px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--surface);
-}
-/* it is centred with a transform of its own, so it only fades */
-.scroll-cue.hx { animation-name: hx-fade; }
-@keyframes hx-fade { from { opacity: 0; } }
-.scroll-cue i {
-  position: relative;
-  width: 1px;
-  height: 38px;
-  background: var(--line);
-  overflow: hidden;
-}
-.scroll-cue i::after {
+.porthole img { width: 100%; height: 100%; object-fit: cover; }
+/* glass: a shaded rim and a streak of reflected light */
+.porthole::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--accent);
-  animation: cue 2.4s var(--ease-io) infinite;
+  border-radius: 50%;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 30%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4), inset 0 8px 22px -6px rgba(0, 0, 0, 0.6);
 }
-@keyframes cue {
-  0% { transform: translateY(-100%); }
-  55%, 100% { transform: translateY(100%); }
+
+.rock {
+  position: absolute;
+  width: 27%;
+  aspect-ratio: 120 / 96;
+  display: grid;
+  place-items: center;
+  animation: rock-drift 9s ease-in-out infinite alternate;
 }
+.rock-body {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: rock-wobble 13s ease-in-out infinite alternate;
+}
+.rock-base { fill: var(--rock); }
+.rock-lit { fill: var(--rock-lit); }
+.rock-shade { fill: var(--rock-shade); }
+.rock-pit { fill: var(--rock-pit); stroke: var(--rock-lit); stroke-width: 1; }
+.rock-ridge { fill: none; stroke: var(--rock-line); stroke-width: 1; stroke-linecap: round; opacity: 0.45; }
+.rock-edge { fill: none; stroke: var(--rock-line); stroke-width: 1.5; stroke-linejoin: round; }
+
+.rock-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px 3px 7px;
+  border-radius: 999px;
+  background: var(--rock);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.rock-label .ic { color: var(--accent); }
+
+.rock--1 { top: 2.5%; left: -6%; --dx: 7px; --dy: -11px; }
+.rock--2 { top: 38%; right: -10%; width: 24.5%; --dx: -6px; --dy: 10px; animation-duration: 11s; animation-delay: -3s; }
+.rock--3 { bottom: 0; left: -7%; width: 26%; --dx: 9px; --dy: 7px; animation-duration: 10s; animation-delay: -6s; }
+.rock--2 .rock-body { animation-duration: 16s; animation-direction: alternate-reverse; }
+.rock--3 .rock-body { animation-duration: 11s; animation-delay: -4s; }
+@keyframes rock-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(var(--dx, 6px), var(--dy, -10px), 0); }
+}
+@keyframes rock-wobble {
+  from { transform: rotate(-7deg); }
+  to { transform: rotate(8deg); }
+}
+
+/* nothing in the hero keeps animating once it has scrolled out of sight */
+.hero.is-away .rocket,
+.hero.is-away .rocket-flame,
+.hero.is-away .rocket-glow,
+.hero.is-away .rock,
+.hero.is-away .rock-body { animation-play-state: paused; }
 
 /* ==========================================================================
    SECTIONS
@@ -978,8 +1084,9 @@ h3 { color: var(--ink); font-weight: 600; line-height: 1.3; }
 
 /* ---------- skills ---------- */
 .skills-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-.skill-card { padding: 26px 26px 28px; transition: transform 0.6s var(--ease-out); }
-.skill-card:hover { transform: translateY(-4px); }
+.skill-card { padding: 26px 26px 28px; }
+.skill-card:not(.rv) { transition: translate 0.6s var(--ease-out); }
+.skill-card:not(.rv):hover { translate: 0 -4px; }
 .skill-card--wide { grid-column: 1 / -1; }
 .skill-card h3 {
   display: flex;
@@ -1070,27 +1177,30 @@ h3 { color: var(--ink); font-weight: 600; line-height: 1.3; }
 
 /* ---------- experience ---------- */
 .timeline { position: relative; }
-.tl-track {
-  position: absolute;
-  left: 7px;
-  top: 12px;
-  bottom: 12px;
-  width: 1px;
-  background: var(--line);
-}
-.tl-track i {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(var(--accent), var(--accent));
-  transform: scaleY(var(--tl, 0));
-  transform-origin: 50% 0;
-}
 
 .timeline ol { display: grid; gap: 22px; }
 .tl-item { position: relative; padding-left: 46px; }
+/* Each entry carries its own stretch of the line, down to the next dot — so
+   the line bends over the curve with the cards instead of staying behind.
+   ::after is the lit part; script.js sets --f as you walk past. */
+.tl-item:not(:last-child)::before,
+.tl-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 37px;
+  bottom: -59px;   /* the 22px gap, then 37px down to the next dot */
+  width: 1px;
+  background: var(--line);
+}
+.tl-item:not(:last-child)::after {
+  background: var(--accent);
+  transform: scaleY(var(--f, 0));
+  transform-origin: 50% 0;
+}
 .tl-dot {
   position: absolute;
+  z-index: 1;
   left: 0;
   top: 30px;
   width: 15px;
@@ -1291,7 +1401,7 @@ h3 { color: var(--ink); font-weight: 600; line-height: 1.3; }
    ========================================================================== */
 @media (max-width: 1080px) {
   .nav-social { display: none; }
-  .hero-visual { width: min(340px, 100%); }
+  .hero-visual { width: min(340px, 100%, calc((100vh - 230px) * 0.74)); }
 }
 
 /* ---------- tablet & down: stacked layouts ---------- */
@@ -1380,7 +1490,7 @@ h3 { color: var(--ink); font-weight: 600; line-height: 1.3; }
     padding-bottom: 96px;
   }
   .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 26px; }
-  .hero-visual { order: -1; width: min(232px, 62vw); }
+  .hero-visual { order: -1; width: min(264px, 70vw); }
 }
 
 @media (max-width: 620px) {
@@ -1388,12 +1498,12 @@ h3 { color: var(--ink); font-weight: 600; line-height: 1.3; }
   .skills-grid { grid-template-columns: minmax(0, 1fr); }
   .hero-actions .btn { flex: 1 1 auto; }
   .hero-stats { margin-top: 34px; }
-  .scroll-cue { display: none; }
   .hero { padding-bottom: 56px; }
-  .chip { padding: 6px 11px; font-size: 0.68rem; }
-  .chip--1 { left: -10%; }
-  .chip--2 { right: -14%; }
-  .chip--3 { left: -6%; }
+  .rock { width: 31%; }
+  .rock--1 { left: -13%; }
+  .rock--2 { right: -16%; width: 28%; }
+  .rock--3 { left: -13%; width: 30%; }
+  .rock-label { gap: 5px; padding: 2px 7px 2px 6px; font-size: 0.64rem; }
   .tl-item { padding-left: 34px; }
   .tl-card { padding: 20px 20px 22px; }
   .hl { padding: 22px 20px 24px; }
@@ -1406,8 +1516,8 @@ h3 { color: var(--ink); font-weight: 600; line-height: 1.3; }
 /* ---------- touch: no hover-only affordances ---------- */
 @media (hover: none) {
   .card::before { display: none; }
-  .btn:hover,
-  .skill-card:hover { transform: none; }
+  .btn:hover { transform: none; }
+  .skill-card:not(.rv):hover { translate: none; }
   .proj:hover .proj-media img { transform: none; }
 }
 
@@ -1426,11 +1536,13 @@ h3 { color: var(--ink); font-weight: 600; line-height: 1.3; }
   }
 
   .js .rv,
-  .js [data-split] .wi { opacity: 1; transform: none; }
+  .js [data-split] .wi { opacity: 1; translate: none; transform: none; }
   .js .proj.rv .proj-media { clip-path: none; }
-  .orbit-ring,
-  .chip { animation: none; }
-  .scroll-cue i::after { animation: none; transform: none; }
+  .rocket,
+  .rocket-flame,
+  .rocket-glow,
+  .rock,
+  .rock-body { animation: none; }
 }
 
 /* ---------- print: just the content ---------- */
@@ -1438,12 +1550,12 @@ h3 { color: var(--ink); font-weight: 600; line-height: 1.3; }
   .backdrop,
   .nav,
   .to-top,
-  .scroll-cue,
   .outro-stage { display: none !important; }
   html { background: #fff; }
   body { color: #111; }
+  .bend { transform: none !important; }
   .js .rv,
-  .js [data-split] .wi { opacity: 1 !important; transform: none !important; }
+  .js [data-split] .wi { opacity: 1 !important; translate: none !important; transform: none !important; }
   .card { background: none; box-shadow: none; border-color: #ccc; }
   .hero { min-height: 0; padding-top: 0; }
 }

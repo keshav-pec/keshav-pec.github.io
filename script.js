@@ -7,15 +7,21 @@
    scrolling carries you over it.
 
      scroll position ──► distance walked ──► craters drift by under the page
-                    └──► where you look  ──► more sky in the hero and at the end
+                    ├──► where you look  ──► more sky in the hero and at the end
+                    └──► the bend        ──► content curls away over the top
+                                             and bottom of the screen, as if
+                                             the page were wrapped on the Moon
 
    • The terrain is procedural: one ray–sphere hit per pixel, then four
      octaves of craters (bowl, raised rim, ejecta, and the shadow each rim
      throws across its own floor) over fine regolith noise. Nothing to
      download, and it stays sharp at any screen size.
-   • The ground is redrawn only when something it depends on changes, so a
-     page that isn't moving costs nothing. Layout is measured once per
-     resize, never per frame.
+   • The ground is redrawn only when something it depends on changes, and the
+     stars only tick over a few times a second while nothing moves, so a
+     page at rest costs next to nothing. Layout is measured once per resize,
+     never per frame; everything that moves is a transform.
+   • A governor watches the frame rate while the ground is being drawn and
+     trades its resolution for smoothness on machines that need it.
    • Lenis adds wheel inertia on desktop pointers only. Touch devices keep
      native scrolling, and reduced-motion visitors get a still landscape.
    ========================================================================== */
@@ -548,9 +554,10 @@ void main() {
 
     // A procedural shader pays for every pixel, so the backing store is
     // capped: the ground is soft by nature and upscales without complaint.
-    const resize = (w, h, frugal) => {
-      let k = Math.min(window.devicePixelRatio || 1, frugal ? 1 : 1.5) * (frugal ? 0.75 : 1);
-      const budget = frugal ? 0.9e6 : 2.4e6;
+    // `q` (1 → 0.5) is the governor's quality factor.
+    const resize = (w, h, q) => {
+      let k = Math.min(window.devicePixelRatio || 1, 1.5) * q;
+      const budget = 1.8e6 * q * q;
       if (w * h * k * k > budget) k = Math.sqrt(budget / (w * h));
       const nw = Math.max(1, Math.round(w * k));
       const nh = Math.max(1, Math.round(h * k));
@@ -626,6 +633,7 @@ void main() {
     const build = (w, h, frugal) => {
       W = w;
       H = h;
+      meteor = null;
       const dpr = Math.min(window.devicePixelRatio || 1, frugal ? 1 : 2);
       canvas.width = Math.round(W * dpr);
       canvas.height = Math.round(H * dpr);
@@ -669,14 +677,17 @@ void main() {
       };
     };
 
-    // t seconds · y scroll px · (mx,my) eased cursor −1…1
-    const draw = (t, y, mx, my, still) => {
+    // t seconds · y scroll px · mx eased cursor −1…1 · floor: the lowest point
+    // of the horizon, px — anything under it is hidden by the ground anyway.
+    // Returns true while a shooting star is in flight.
+    const draw = (t, y, mx, floor, still) => {
       ctx.clearRect(0, 0, W, H);
       let color = -1;
 
       for (const s of stars) {
         let sy = s.y - y * PARALLAX[s.layer];
         sy = ((sy % H) + H) % H;
+        if (sy > floor) continue;
         const sx = s.x - mx * DRIFT[s.layer];
         const a = still ? s.a : s.a * (1 - s.tw + s.tw * (0.5 + 0.5 * Math.sin(t * s.sp + s.ph)));
         if (s.c !== color) {
@@ -694,7 +705,7 @@ void main() {
       }
       ctx.globalAlpha = 1;
 
-      if (still) return;
+      if (still) return false;
       if (!nextMeteor) nextMeteor = t + 2.5 + Math.random() * 3;
       if (!meteor && t > nextMeteor) spawnMeteor(t);
       if (meteor) {
@@ -723,16 +734,180 @@ void main() {
           ctx.stroke();
         }
       }
+      return !!meteor;
     };
 
     return { build, draw };
   })();
 
   /* ======================================================================
-     7. MEASURE — all layout reads happen here, once per resize
+     7. THE BEND — the page wraps over the Moon's curve
+     Seen from the side, the page is a strip that lies flat through the
+     middle of the screen and curls away from you above and below it, like a
+     label on a great wheel. Each block of content is one flat facet laid on
+     that curve: it tilts back, sinks away and draws in toward the centre as
+     it nears the top or bottom of the screen — and it does so in step with
+     the ground turning underneath.
+
+     The curve is tabulated once. Per frame, each block near the screen costs
+     two table lookups and one transform; blocks out of sight cost nothing.
      ====================================================================== */
-  const timeline = $("#timeline");
-  const tlFill = $("#tl-fill");
+  const Bend = (() => {
+    const SEL =
+      ".hero-title, .hero-role, .hero-desc, .hero-actions, .hero-stats, .hero-visual, .sec-head, " +
+      ".about-text, .about-card, .skill-card, .proj, .tl-item, .hl, .contact-info, .contact-form, " +
+      ".outro-inner, .footer-inner";
+
+    // The curve's shape, with u = distance from the middle of the screen in
+    // half-screen-heights (so the top and bottom edges are at u = ∓1).
+    const FLAT = 0.18; // the strip is perfectly flat out to here …
+    const FULL = 1.45; // … and stops curling here, just off screen
+    const TILT = 50 * DEG; // the lean reached at FULL
+    const POW = 1.7; // how late the curl comes on: higher keeps more of the middle flat
+    const DIST = 2.2; // the eye's distance from the page, in half-screen-heights
+    const N = 104;
+    const UMAX = 2.6;
+
+    // Yt: how far down the screen the strip has got after u of page;
+    // Zt: how far it has sunk away from the eye.
+    const Yt = new Float32Array(N + 1);
+    const Zt = new Float32Array(N + 1);
+    const SPAN = 0.06; // the shortest stretch of curve a facet is fitted to
+    let edge = 0; // the page distance that lands on the screen's edge once bent
+    let reach = 0; // past this a block is wholly off screen, bent or not
+    {
+      const du = UMAX / N;
+      for (let i = 0; i < N; i++) {
+        const a = (i + 0.5) * du;
+        const phi = TILT * Math.pow(clamp((a - FLAT) / (FULL - FLAT)), POW);
+        Yt[i + 1] = Yt[i] + Math.cos(phi) * du;
+        Zt[i + 1] = Zt[i] + Math.sin(phi) * du;
+        const onScreen = Yt[i + 1] / (1 + Zt[i + 1] / DIST);
+        if (!edge && onScreen > 1.02) edge = (i + 1) * du;
+        if (!reach && onScreen > 1.12) reach = (i + 1) * du;
+      }
+      edge = edge || UMAX - SPAN;
+      reach = reach || UMAX - SPAN;
+    }
+
+    const units = $$(SEL).map((el) => ({ el, top: 0, h: 0, cx: 0, on: false, last: "" }));
+    const steps = units.filter((b) => b.el.classList.contains("tl-item")).map((b) => ({ b, f: -1 }));
+    for (const b of units) b.el.classList.add("bend");
+
+    let oY = 0;
+    let oZ = 0;
+    // where the point u of the page sits on the curve; k (0–1) is how much of
+    // the curl applies — it eases to nothing at the very top and end of the
+    // page, so the first and the last screen rest flat
+    const look = (u, k) => {
+      const a = Math.min(Math.abs(u), UMAX);
+      const x = a * (N / UMAX);
+      const i = Math.min(x | 0, N - 1);
+      const f = x - i;
+      const yv = Yt[i] + (Yt[i + 1] - Yt[i]) * f;
+      oY = (u < 0 ? -1 : 1) * (a + (yv - a) * k);
+      oZ = (Zt[i] + (Zt[i + 1] - Zt[i]) * f) * k;
+    };
+
+    // layout positions, free of any transform (offsets ignore transforms)
+    const measure = () => {
+      for (const b of units) {
+        let x = 0;
+        let y = 0;
+        for (let n = b.el; n; n = n.offsetParent) {
+          x += n.offsetLeft;
+          y += n.offsetTop;
+        }
+        b.top = y;
+        b.h = b.el.offsetHeight;
+        b.cx = x + b.el.offsetWidth / 2;
+      }
+    };
+
+    const release = (b) => {
+      if (!b.on) return;
+      b.on = false;
+      b.last = "";
+      b.el.style.transform = "";
+      b.el.style.willChange = "";
+    };
+
+    const update = (y, vw, vh, max) => {
+      const H = vh / 2;
+      const mid = y + H;
+      const d = DIST * H;
+      const kTop = smooth(clamp(y / (vh * 0.7)));
+      const kBot = smooth(clamp((max - y) / (vh * 0.7)));
+
+      for (const b of units) {
+        const t = (b.top - mid) / H;
+        const e = t + b.h / H;
+        if (e <= -reach || t >= reach || b.h === 0) {
+          release(b);
+          continue;
+        }
+        // Only the stretch that is on screen shapes the facet. So a block
+        // taller than the screen lies flat while its middle is being read,
+        // and one just arriving takes the lean of the curve at the edge.
+        let t1 = Math.max(t, -edge);
+        let e1 = Math.min(e, edge);
+        if (e1 - t1 < SPAN) {
+          if (t + e > 0) e1 = t1 + SPAN;
+          else t1 = e1 - SPAN;
+        }
+        look(t1, t1 < 0 ? kTop : kBot);
+        const y0 = oY;
+        const z0 = oZ;
+        look(e1, e1 < 0 ? kTop : kBot);
+        const y1 = oY;
+        const z1 = oZ;
+
+        // the facet is the chord between those two points on the curve
+        const a = -Math.atan2(z1 - z0, y1 - y0);
+        const sc = (t + e) / 2; // the block's own middle
+        const ym = (t1 + e1) / 2 - sc; // the chord's middle, measured from it
+        const ty = ((y0 + y1) / 2 - sc - ym * Math.cos(a)) * H;
+        const tz = (-(z0 + z1) / 2 - ym * Math.sin(a)) * H;
+
+        let tf = "none";
+        if (Math.abs(a) > 2e-4 || Math.abs(ty) > 0.02 || Math.abs(tz) > 0.02) {
+          // perspective from the middle of the screen, not of the block
+          const ox = (vw / 2 - b.cx).toFixed(1);
+          const oy = (-sc * H).toFixed(1);
+          tf =
+            `translate3d(${ox}px,${oy}px,0) perspective(${d.toFixed(0)}px) ` +
+            `translate3d(${-ox}px,${(ty - oy).toFixed(2)}px,${tz.toFixed(2)}px) rotateX(${a.toFixed(5)}rad)`;
+        }
+        if (!b.on) {
+          b.on = true;
+          b.el.style.willChange = "transform"; // one steady layer while in play
+        }
+        if (tf !== b.last) {
+          b.last = tf;
+          b.el.style.transform = tf;
+        }
+      }
+    };
+
+    // the lit part of the timeline's line, one stretch per entry
+    const walkLine = (y, vh) => {
+      for (let i = 0; i < steps.length - 1; i++) {
+        const s = steps[i];
+        const len = Math.max(1, steps[i + 1].b.top - s.b.top);
+        const f = Math.round(clamp((y + vh * 0.62 - (s.b.top + 37)) / len) * 500) / 500;
+        if (f !== s.f) {
+          s.f = f;
+          s.b.el.style.setProperty("--f", f);
+        }
+      }
+    };
+
+    return { measure, update, walkLine };
+  })();
+
+  /* ======================================================================
+     8. MEASURE — all layout reads happen here, once per resize
+     ====================================================================== */
   const navFill = $(".nav-progress i");
   const glow = $("#cursor-glow");
   const navSections = $$("main section[id]");
@@ -742,7 +917,6 @@ void main() {
     vh: 0,
     max: 1,
     tops: [],
-    tl: { top: 0, h: 1 },
     endStart: 1, // scroll offset at which the outro starts to come into view
     skyW: 0,
     skyH: 0,
@@ -750,6 +924,7 @@ void main() {
     cam: { tanY: 0.466, alt: 0.03, warp: 0 },
     // where the horizon sits, as a fraction of the screen height from the top
     hz: { hero: 0.79, walk: 0.63, end: 0.76 },
+    sag: 0, // how far the horizon drops from the middle of the screen to its edge, px
     walkK: 0, // moon radii walked per px scrolled
   };
 
@@ -766,8 +941,7 @@ void main() {
 
     M.tops = navSections.map((el) => ({ id: el.id, top: el.getBoundingClientRect().top + sy }));
 
-    const tr = timeline.getBoundingClientRect();
-    M.tl = { top: tr.top + sy, h: Math.max(1, tr.height) };
+    Bend.measure();
     M.endStart = clamp(outro.getBoundingClientRect().top + sy - vh, 0, M.max - 1);
 
     // ---- the camera over the ground ----
@@ -782,38 +956,45 @@ void main() {
     // screen's edge. That reads beautifully on a wide screen but is barely
     // there on a phone, so narrow screens get a little extra bow.
     const sag = (Math.sin(2 * M.dip) / 8) * aspect * aspect * tanY * bh;
-    const want = clamp(bw * 0.045, 16, 72);
+    const want = clamp(bw * 0.066, 24, 104);
+    M.sag = want;
     M.cam = { tanY, alt, warp: Math.max(0, want - sag) / (aspect * aspect * bh * 0.5) };
     M.hz = narrow ? { hero: 0.83, walk: 0.72, end: 0.78 } : { hero: 0.79, walk: 0.63, end: 0.76 };
     // On screen the horizon is (very nearly) an arc of this radius; the CSS
     // stand-in ground and the reading veil are drawn on the same circle.
     backdrop.style.setProperty("--rc", Math.round((bw * bw) / (8 * want)) + "px");
-    // walking pace: the nearest ground drifts at ~40% of the page's speed
+    // walking pace: the nearest ground drifts at about half the page's speed
     const below = pitchFor(M.hz.walk) + Math.atan(tanY);
-    M.walkK = (0.4 * ((2 * tanY) / bh) * alt) / Math.pow(Math.sin(below), 2);
+    M.walkK = (0.52 * ((2 * tanY) / bh) * alt) / Math.pow(Math.sin(below), 2);
 
-    Ground.resize(bw, bh, frugal);
+    Ground.resize(bw, bh, quality);
 
     // The star canvas ignores the small height changes a mobile URL bar makes.
-    if (bw !== M.skyW || Math.abs(bh - M.skyH) > 140) {
+    const frugal = quality < 0.7;
+    if (bw !== M.skyW || Math.abs(bh - M.skyH) > 140 || frugal !== M.skyFrugal) {
       M.skyW = bw;
       M.skyH = bh;
+      M.skyFrugal = frugal;
       Stars.build(bw, bh, frugal);
       starsDirty = true;
     }
+    layoutDirty = true;
   };
 
   /* ======================================================================
-     8. THE LOOP
+     9. THE LOOP
      ====================================================================== */
   let needMeasure = true;
+  let layoutDirty = true; // positions were re-measured: re-lay the bend
   let starsDirty = true;
-  let frugal = false; // set by the frame-rate probe below
-  let probe = { n: 0, sum: 0, last: 0 };
-  let ptrX = 0;
-  let ptrY = 0; // cursor, −1…1
+  let starsAt = 0; // when the sky was last drawn
+  let meteorLive = false;
+  // The governor: `quality` scales the ground's resolution. It only ever
+  // steps down, and only while the ground is actually being redrawn.
+  let quality = 1;
+  const gov = { last: 0, n: 0, sum: 0, idleN: 0, idleSum: 0, period: 1000 / 60, before: 0, done: false };
+  let ptrX = 0; // cursor, −1…1 across the screen
   let easeX = 0;
-  let easeY = 0;
   let glowX = 0;
   let glowY = 0;
   let glowTX = 0;
@@ -838,7 +1019,6 @@ void main() {
       "pointermove",
       (e) => {
         ptrX = (e.clientX / M.vw) * 2 - 1;
-        ptrY = (e.clientY / M.vh) * 2 - 1;
         glowTX = e.clientX;
         glowTY = e.clientY;
         if (!glow.classList.contains("is-on")) {
@@ -855,24 +1035,42 @@ void main() {
   const frame = (now) => {
     if (lenis) lenis.raf(now);
 
-    // One-off health check: if this device can't hold ~30 fps while the
-    // ground is being redrawn, drop to a lighter render and carry on.
-    if (probe && drewLast) {
-      const dt = now - probe.last;
-      if (probe.last && dt < 250 && !document.hidden) {
-        probe.n++;
-        probe.sum += dt;
-        if (probe.n === 45) {
-          if (probe.sum / probe.n > 31) {
-            frugal = true;
-            M.skyW = 0; // forces the star canvas to rebuild too
+    // The governor. Frames in which nothing heavy was drawn tell us the
+    // display's own rhythm (60 Hz, 120 Hz …); if frames that redraw the
+    // ground run well behind it, the ground gives up some resolution.
+    const dt = now - gov.last;
+    gov.last = now;
+    // (the first seconds are left out: the page is still settling then)
+    if (dt > 0 && dt < 120 && !document.hidden && now - t0 > 2500) {
+      if (drewLast && !gov.done) {
+        gov.n++;
+        gov.sum += dt;
+        if (gov.n === 36) {
+          const avg = gov.sum / gov.n;
+          gov.n = gov.sum = 0;
+          if (gov.before && avg > gov.before * 0.92) {
+            // the last step bought nothing: the ground isn't what is slow
+            // here, so give the resolution back and stop adjusting
+            quality = Math.min(1, quality / 0.8);
+            gov.done = true;
             needMeasure = true;
+          } else if (avg > gov.period * 1.32 && quality > 0.5) {
+            gov.before = avg;
+            quality = Math.max(0.5, quality * 0.8);
+            needMeasure = true;
+          } else {
+            gov.before = 0;
           }
-          probe = null;
+        }
+      } else if (!drewLast) {
+        gov.idleN++;
+        gov.idleSum += dt;
+        if (gov.idleN === 24) {
+          gov.period = clamp(Math.min(gov.period, gov.idleSum / gov.idleN), 1000 / 144, 1000 / 60);
+          gov.idleN = gov.idleSum = 0;
         }
       }
     }
-    if (probe) probe.last = now;
 
     if (needMeasure) {
       needMeasure = false;
@@ -883,11 +1081,12 @@ void main() {
     const y = window.scrollY;
     const { vh } = M;
     const scrolled = y !== lastY;
+    const moved = scrolled || layoutDirty;
     lastY = y;
+    layoutDirty = false;
 
     /* ---- eased inputs ---- */
     easeX += (ptrX - easeX) * 0.045;
-    easeY += (ptrY - easeY) * 0.045;
     const dayTarget = theme === "light" ? 1 : 0;
     day += (dayTarget - day) * 0.09;
     if (Math.abs(dayTarget - day) < 0.002) day = dayTarget;
@@ -915,19 +1114,33 @@ void main() {
       backdrop.style.setProperty("--horizon", (frac * 100).toFixed(2) + "%");
     }
 
+    /* ---- the bend ---- */
+    if (moved) {
+      if (!reduced) Bend.update(y, M.vw, vh, M.max);
+      Bend.walkLine(y, vh);
+    }
+
     /* ---- stars ---- */
+    // Every frame while something moves; otherwise the twinkle is refreshed
+    // about fifteen times a second, which the eye can't tell from sixty.
     if (day < 0.999) {
+      const floor = frac * M.skyH + M.sag + 6;
       if (!reduced) {
-        Stars.draw(t, y, easeX, easeY, false);
-      } else if (starsDirty || scrolled || lastTheme !== theme) {
-        Stars.draw(0, 0, 0, 0, true);
+        const drifting = Math.abs(ptrX - easeX) > 0.004;
+        if (moved || starsDirty || drifting || meteorLive || lastTheme !== theme || now - starsAt > 64) {
+          meteorLive = Stars.draw(t, y, easeX, floor, false);
+          starsAt = now;
+          starsDirty = false;
+        }
+      } else if (starsDirty || moved || lastTheme !== theme) {
+        Stars.draw(0, 0, 0, floor, true);
         starsDirty = false;
       }
     }
     lastTheme = theme;
 
     /* ---- cursor glow ---- */
-    if (finePointer && !reduced) {
+    if (finePointer && !reduced && (Math.abs(glowTX - glowX) > 0.05 || Math.abs(glowTY - glowY) > 0.05)) {
       glowX += (glowTX - glowX) * 0.12;
       glowY += (glowTY - glowY) * 0.12;
       glow.style.transform = `translate3d(${glowX.toFixed(1)}px,${glowY.toFixed(1)}px,0)`;
@@ -936,7 +1149,6 @@ void main() {
     /* ---- indicators (only touched when something changed) ---- */
     if (scrolled) {
       navFill.style.transform = `scaleX(${clamp(y / M.max).toFixed(4)})`;
-      tlFill.style.transform = `scaleY(${clamp((y + vh * 0.62 - M.tl.top) / M.tl.h).toFixed(4)})`;
 
       const stuck = y > 10;
       if (stuck !== lastStuck) {
@@ -969,8 +1181,14 @@ void main() {
   else addEventListener("load", startGround, { once: true });
 
   /* ======================================================================
-     9. HERO — rotating role, counting stats
+     10. HERO — rotating role, counting stats
      ====================================================================== */
+  // the rocket and its asteroids stop animating once the hero is off screen
+  const heroEl = $(".hero");
+  if (heroEl && "IntersectionObserver" in window) {
+    new IntersectionObserver(([e]) => heroEl.classList.toggle("is-away", !e.isIntersecting)).observe(heroEl);
+  }
+
   const role = $("#role");
   if (role && !reduced && typeof role.animate === "function") {
     const roles = [
@@ -1039,7 +1257,7 @@ void main() {
   }
 
   /* ======================================================================
-     10. CARDS — a lit edge that tracks the cursor
+     11. CARDS — a lit edge that tracks the cursor
      ====================================================================== */
   if (finePointer) {
     document.addEventListener(
@@ -1056,7 +1274,7 @@ void main() {
   }
 
   /* ======================================================================
-     11. CONTACT FORM — no backend on Pages, so compose a mail draft
+     12. CONTACT FORM — no backend on Pages, so compose a mail draft
      ====================================================================== */
   const form = $("#contact-form");
   if (form) {

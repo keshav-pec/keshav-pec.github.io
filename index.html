@@ -47,7 +47,7 @@
   <!-- the portrait sits in the hero, so it is fetched alongside the CSS -->
   <link rel="preload" as="image" href="images/opt/profile-760.webp"
     imagesrcset="images/opt/profile-400.webp 400w, images/opt/profile-760.webp 760w"
-    imagesizes="(max-width: 760px) 190px, 330px" fetchpriority="high" />
+    imagesizes="(max-width: 760px) 170px, 230px" fetchpriority="high" />
 
   <script type="application/ld+json">
   {
@@ -293,26 +293,111 @@
           </dl>
         </div>
 
-        <!-- portrait in orbit, with two satellites circling it -->
+        <!-- the portrait rides in a rocket's porthole; three asteroids drift around it -->
         <div class="hero-visual hx" style="--i:3">
-          <div class="orbit">
-            <div class="orbit-ring orbit-ring--a"><i></i></div>
-            <div class="orbit-ring orbit-ring--b"><i></i></div>
-            <div class="portrait">
-              <img src="images/opt/profile-760.webp"
-                srcset="images/opt/profile-400.webp 400w, images/opt/profile-760.webp 760w"
-                sizes="(max-width: 760px) 190px, 330px" width="760" height="760" alt="Portrait of Keshav Goyal"
-                fetchpriority="high" decoding="async" />
+          <div class="craft">
+            <div class="rocket">
+              <div class="rocket-glow"></div>
+              <svg class="rocket-flame" viewBox="100 392 100 90" aria-hidden="true" focusable="false">
+                <defs>
+                  <linearGradient id="rk-flame" x1="0" y1="0" x2="0" y2="1">
+                    <stop class="rk-f1" offset="0" />
+                    <stop class="rk-f2" offset="0.5" />
+                    <stop class="rk-f3" offset="1" />
+                  </linearGradient>
+                </defs>
+                <path d="M106 396c-2 36 26 56 44 82 18-26 46-46 44-82Z" fill="url(#rk-flame)" />
+                <path class="rk-core" d="M126 396c-1 22 15 36 24 52 9-16 25-30 24-52Z" />
+              </svg>
+              <svg class="rocket-hull" viewBox="0 0 300 480" aria-hidden="true" focusable="false">
+                <defs>
+                  <linearGradient id="rk-body" x1="0" y1="0" x2="1" y2="0">
+                    <stop class="rk-s1" offset="0" />
+                    <stop class="rk-s2" offset="0.42" />
+                    <stop class="rk-s3" offset="1" />
+                  </linearGradient>
+                  <linearGradient id="rk-trim" x1="0" y1="0" x2="1" y2="0">
+                    <stop class="rk-t1" offset="0" />
+                    <stop class="rk-t2" offset="1" />
+                  </linearGradient>
+                  <clipPath id="rk-clip">
+                    <path
+                      d="M150 8C196 44 260 104 260 186V340c0 16-8 28-20 36H60c-12-8-20-20-20-36V186C40 104 104 44 150 8Z" />
+                  </clipPath>
+                </defs>
+
+                <!-- fins and nozzle sit behind the hull -->
+                <path class="rk-fin" d="M48 262C16 284 6 330 10 408l10 4c14-20 28-32 46-38Z" fill="url(#rk-trim)" />
+                <path class="rk-fin" d="M252 262c32 22 42 68 38 146l-10 4c-14-20-28-32-46-38Z"
+                  fill="url(#rk-trim)" />
+                <path class="rk-nozzle" d="M114 374h72l10 24H104Z" />
+
+                <!-- hull, nose cone and seams -->
+                <path
+                  d="M150 8C196 44 260 104 260 186V340c0 16-8 28-20 36H60c-12-8-20-20-20-36V186C40 104 104 44 150 8Z"
+                  fill="url(#rk-body)" />
+                <g clip-path="url(#rk-clip)">
+                  <path d="M0 0H300V84Q150 108 0 84Z" fill="url(#rk-trim)" />
+                  <path class="rk-seam" d="M36 330Q150 350 264 330" />
+                  <path class="rk-sheen" d="M62 110C50 160 48 250 52 360" />
+                </g>
+                <path class="rk-edge"
+                  d="M150 8C196 44 260 104 260 186V340c0 16-8 28-20 36H60c-12-8-20-20-20-36V186C40 104 104 44 150 8Z" />
+
+                <!-- porthole bezel: the photo sits inside it -->
+                <circle class="rk-bezel" cx="150" cy="214" r="95" stroke="url(#rk-trim)" />
+                <circle class="rk-bezel-line" cx="150" cy="214" r="100" />
+              </svg>
+              <div class="porthole">
+                <img src="images/opt/profile-760.webp"
+                  srcset="images/opt/profile-400.webp 400w, images/opt/profile-760.webp 760w"
+                  sizes="(max-width: 760px) 170px, 230px" width="760" height="760" alt="Portrait of Keshav Goyal"
+                  fetchpriority="high" decoding="async" />
+              </div>
             </div>
-            <div class="chip chip--1"><svg class="ic">
-                <use href="#i-stack" />
-              </svg> MERN</div>
-            <div class="chip chip--2"><svg class="ic">
-                <use href="#i-code" />
-              </svg> C++</div>
-            <div class="chip chip--3"><svg class="ic">
-                <use href="#i-spark" />
-              </svg> GenAI</div>
+
+            <div class="rock rock--1">
+              <svg class="rock-body" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+                <path class="rock-base" d="M24 9 60 3l36 10 19 27-8 33-32 20-39-5L7 61 5 31Z" />
+                <path class="rock-lit" d="M24 9 60 3 50 30 21 42 5 31Z" />
+                <path class="rock-shade" d="M115 40l-8 33-32 20-6-31Z" />
+                <path class="rock-ridge" d="M50 30 69 62M21 42 36 88" />
+                <ellipse class="rock-pit" cx="88" cy="28" rx="9" ry="6.5" />
+                <circle class="rock-pit" cx="27" cy="68" r="4.5" />
+                <path class="rock-edge" d="M24 9 60 3l36 10 19 27-8 33-32 20-39-5L7 61 5 31Z" />
+              </svg>
+              <span class="rock-label"><svg class="ic">
+                  <use href="#i-stack" />
+                </svg> MERN</span>
+            </div>
+            <div class="rock rock--2">
+              <svg class="rock-body" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+                <path class="rock-base" d="M40 5l42 4 29 24 4 32-25 25-44 3L12 70 6 36Z" />
+                <path class="rock-lit" d="M40 5l42 4-14 24-40 6L6 36Z" />
+                <path class="rock-shade" d="M115 65 90 90l-44 3 30-27Z" />
+                <path class="rock-ridge" d="M68 33l8 33M28 39 12 70" />
+                <ellipse class="rock-pit" cx="96" cy="44" rx="7" ry="8.5" />
+                <circle class="rock-pit" cx="30" cy="76" r="4" />
+                <path class="rock-edge" d="M40 5l42 4 29 24 4 32-25 25-44 3L12 70 6 36Z" />
+              </svg>
+              <span class="rock-label"><svg class="ic">
+                  <use href="#i-code" />
+                </svg> C++</span>
+            </div>
+            <div class="rock rock--3">
+              <svg class="rock-body" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+                <path class="rock-base" d="M18 20 52 4l44 6 20 30-12 36-36 16-42-8L4 52Z" />
+                <path class="rock-lit" d="M18 20 52 4l-2 26-26 14L4 52Z" />
+                <path class="rock-shade" d="M116 40l-12 36-36 16 10-34Z" />
+                <path class="rock-ridge" d="M50 30l28 28M24 44l-2 40" />
+                <ellipse class="rock-pit" cx="86" cy="24" rx="8" ry="5.5" />
+                <circle class="rock-pit" cx="38" cy="78" r="4.5" />
+                <path class="rock-edge" d="M18 20 52 4l44 6 20 30-12 36-36 16-42-8L4 52Z" />
+              </svg>
+              <span class="rock-label"><svg class="ic">
+                  <use href="#i-spark" />
+                </svg> GenAI</span>
+            </div>
           </div>
         </div>
       </div>
@@ -601,7 +686,6 @@
         </header>
 
         <div class="timeline" id="timeline">
-          <div class="tl-track" aria-hidden="true"><i id="tl-fill"></i></div>
           <ol>
             <li class="tl-item rv">
               <div class="tl-dot"></div>
