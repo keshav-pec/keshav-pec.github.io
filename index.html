@@ -8,20 +8,21 @@
   <meta name="description"
     content="Keshav Goyal — Full Stack Developer and CSE undergraduate at Punjab Engineering College, Chandigarh. MERN, GenAI, WebRTC and cloud-native systems." />
   <!-- content is kept in sync with the active theme, below and by script.js -->
-  <meta name="theme-color" id="meta-theme-color" content="#eaf0f9" />
-  <meta name="color-scheme" content="light dark" />
-  <!-- Theme must be decided before the stylesheet applies, or the page flashes
-       the wrong palette for a frame. This blocks parsing (deliberately) and
-       runs before the <link rel="stylesheet"> below is even requested. -->
+  <meta name="theme-color" id="meta-theme-color" content="#05070d" />
+  <meta name="color-scheme" content="dark light" />
+  <!-- Runs before the stylesheet so the page never flashes the wrong sky.
+       Night is the default; "light" is only used once the visitor picks it.
+       The `js` class arms the scroll reveals — and if script.js never arrives,
+       the timeout below un-hides everything so content is never stuck. -->
   <script>
     (function () {
-      try {
-        var stored = localStorage.getItem("theme");
-        var theme = stored || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.documentElement.setAttribute("data-theme", theme);
-        var m = document.getElementById("meta-theme-color");
-        if (m) m.content = theme === "dark" ? "#05070f" : "#eaf0f9";
-      } catch (e) { }
+      var d = document.documentElement, theme = "dark";
+      try { if (localStorage.getItem("theme") === "light") theme = "light"; } catch (e) { }
+      d.setAttribute("data-theme", theme);
+      d.classList.add("js");
+      var m = document.getElementById("meta-theme-color");
+      if (m) m.content = theme === "dark" ? "#05070d" : "#dfe5ee";
+      setTimeout(function () { if (!window.__lunar) d.classList.add("reveal-all"); }, 3500);
     })();
   </script>
   <link rel="canonical" href="https://keshav-pec.github.io/" />
@@ -35,16 +36,18 @@
   <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232563eb'/><stop offset='.55' stop-color='%231d4ed8'/><stop offset='1' stop-color='%230b1220'/></linearGradient></defs><rect width='32' height='32' rx='9.5' fill='url(%23g)'/><g stroke-width='3.2' stroke-linecap='round' fill='none'><path d='M11 8.5v15' stroke='%23fff'/><path d='M21.6 8.9 12.35 16' stroke='%23fff'/><path d='M12.35 16 21.6 23.1' stroke='%23f5b301'/></g></svg>" />
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='9' fill='%2305070d'/><circle cx='16' cy='16' r='10' fill='%23151a2a'/><path d='M16 6a10 10 0 0 1 0 20a6.2 10 0 0 0 0-20Z' fill='%23f3ead2'/></svg>" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" />
+  <!-- Fonts are self-hosted (latin subsets, ~110 KB in total): no third-party
+       request stands between the visitor and the first paint. Only the display
+       face is preloaded — it sets the hero headline. -->
+  <link rel="preload" as="font" type="font/woff2" href="fonts/instrument-serif.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="fonts/instrument-serif-italic.woff2" crossorigin />
   <link rel="stylesheet" href="styles.css" />
-
+  <!-- the portrait sits in the hero, so it is fetched alongside the CSS -->
   <link rel="preload" as="image" href="images/opt/profile-760.webp"
     imagesrcset="images/opt/profile-400.webp 400w, images/opt/profile-760.webp 760w"
-    imagesizes="(max-width: 900px) 220px, 340px" fetchpriority="high" />
+    imagesizes="(max-width: 760px) 190px, 330px" fetchpriority="high" />
 
   <script type="application/ld+json">
   {
@@ -67,29 +70,8 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Scroll progress (CSS scroll-timeline driven) -->
-  <div class="progress" aria-hidden="true"><i></i></div>
-
-  <!-- Sentinel used by IntersectionObserver instead of a scroll listener -->
-  <div id="top-sentinel" aria-hidden="true"></div>
-
   <!-- ================= ICON SPRITE ================= -->
   <svg class="sprite" aria-hidden="true" focusable="false">
-    <defs>
-      <linearGradient id="k-grad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#2563eb" />
-        <stop offset=".55" stop-color="#1d4ed8" />
-        <stop offset="1" stop-color="#0b1220" />
-      </linearGradient>
-    </defs>
-    <symbol id="i-k" viewBox="0 0 32 32">
-      <rect width="32" height="32" rx="9.5" fill="url(#k-grad)" />
-      <g fill="none" stroke-width="3.2" stroke-linecap="round">
-        <path d="M11 8.5v15" stroke="#fff" />
-        <path d="M21.6 8.9 12.35 16" stroke="#fff" />
-        <path d="M12.35 16 21.6 23.1" stroke="#f5b301" />
-      </g>
-    </symbol>
     <symbol id="i-github" viewBox="0 0 24 24" fill="currentColor" stroke="none">
       <path
         d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.63-5.48 5.93.43.37.81 1.1.81 2.22 0 1.6-.01 2.9-.01 3.29 0 .32.21.7.83.58C20.56 22.29 24 17.8 24 12.5 24 5.87 18.63.5 12 .5Z" />
@@ -111,13 +93,16 @@
       <circle cx="12" cy="10.5" r="3" />
     </symbol>
     <symbol id="i-link" viewBox="0 0 24 24">
-      <path d="M14 4h6v6" />
-      <path d="M20 4 11 13" />
-      <path d="M18 14.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4.5" />
+      <path d="M8 16 17 7" />
+      <path d="M9.5 7H17v7.5" />
     </symbol>
     <symbol id="i-arrow-up" viewBox="0 0 24 24">
       <path d="M12 19V5" />
       <path d="m5.5 11.5 6.5-6.5 6.5 6.5" />
+    </symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24">
+      <path d="M12 5v14" />
+      <path d="m5.5 12.5 6.5 6.5 6.5-6.5" />
     </symbol>
     <symbol id="i-file" viewBox="0 0 24 24">
       <path d="M14 2.5H7A2 2 0 0 0 5 4.5v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-12Z" />
@@ -169,45 +154,34 @@
       <path d="M22 20v-1.5a4 4 0 0 0-3-3.87" />
       <path d="M16.5 4.13a4 4 0 0 1 0 7.24" />
     </symbol>
-    <symbol id="i-menu" viewBox="0 0 24 24">
-      <path d="M4 7h16M4 12h16M4 17h16" />
-    </symbol>
-    <symbol id="i-close" viewBox="0 0 24 24">
-      <path d="M6 6 18 18M18 6 6 18" />
-    </symbol>
-    <symbol id="i-chevron" viewBox="0 0 24 24">
-      <path d="m7 10 5 5 5-5" />
-    </symbol>
     <symbol id="i-send" viewBox="0 0 24 24">
       <path d="M21.5 2.5 10.5 13.5" />
       <path d="M21.5 2.5 14.5 21.5l-4-8-8-4 19-7Z" />
     </symbol>
-    <symbol id="i-sun" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="4.3" />
-      <path
-        d="M12 2.5v2.6M12 18.9v2.6M4.3 4.3l1.85 1.85M17.85 17.85l1.85 1.85M2.5 12h2.6M18.9 12h2.6M4.3 19.7l1.85-1.85M17.85 6.15l1.85-1.85" />
-    </symbol>
-    <symbol id="i-moon" viewBox="0 0 24 24">
-      <path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z" />
-    </symbol>
   </svg>
 
-  <!-- ================= PARALLAX BACKDROP ================= -->
-  <div class="backdrop" aria-hidden="true">
-    <div class="bd-grid" data-par-bg="0.10"></div>
-    <div class="bd-orb bd-orb--a" data-par-bg="0.26"></div>
-    <div class="bd-orb bd-orb--b" data-par-bg="0.42"></div>
-    <div class="bd-orb bd-orb--c" data-par-bg="0.16"></div>
-    <div class="bd-rain" id="rain"></div>
-    <div class="bd-vignette"></div>
+  <!-- ================= THE LUNAR SURFACE =================
+       Everything in here is decorative and fixed behind the page:
+       black sky → stars → the ground you are walking on → a veil that
+       keeps the text readable. The ground is a WebGL sphere seen from just
+       above it, so its horizon curves away at the edges; the plain CSS
+       ground underneath is what shows until (or unless) WebGL is ready. -->
+  <div class="backdrop" id="backdrop" aria-hidden="true">
+    <div class="sky"></div>
+    <canvas id="stars"></canvas>
+    <div class="ground-fb"></div>
+    <canvas id="ground"></canvas>
+    <div class="veil"></div>
+    <div class="cursor-glow" id="cursor-glow"></div>
   </div>
 
   <!-- ================= NAV ================= -->
   <header class="nav" id="nav">
     <div class="wrap nav-inner">
-      <a class="brand" href="#home">
-        <svg class="brand-mark" aria-hidden="true">
-          <use href="#i-k" />
+      <a class="brand" href="#home" aria-label="Keshav Goyal — home">
+        <svg class="pg brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+          <circle class="pg-disc" cx="12" cy="12" r="10" />
+          <path class="pg-lit" d="M12 2A10 10 0 0 1 12 22A6.4 10 0 0 0 12 2Z" />
         </svg>
         <span class="brand-name">Keshav Goyal</span>
       </a>
@@ -236,33 +210,36 @@
       </nav>
 
       <div class="nav-right">
-        <a class="icon-btn" href="https://github.com/keshav-pec" target="_blank" rel="noopener" aria-label="GitHub"><svg
-            class="ic">
+        <a class="icon-btn nav-social" href="https://github.com/keshav-pec" target="_blank" rel="noopener"
+          aria-label="GitHub"><svg class="ic">
             <use href="#i-github" />
           </svg></a>
-        <a class="icon-btn" href="https://www.linkedin.com/in/keshavgoyalpec/" target="_blank" rel="noopener"
+        <a class="icon-btn nav-social" href="https://www.linkedin.com/in/keshavgoyalpec/" target="_blank" rel="noopener"
           aria-label="LinkedIn"><svg class="ic">
             <use href="#i-linkedin" />
           </svg></a>
-        <a class="btn btn-sm" href="#contact">Let's talk</a>
-        <button class="icon-btn theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark theme">
-          <svg class="ic ic-moon" aria-hidden="true">
-            <use href="#i-moon" />
-          </svg>
-          <svg class="ic ic-sun" aria-hidden="true">
-            <use href="#i-sun" />
+        <!-- moon ⇄ sun: one glyph that morphs between the two -->
+        <button class="icon-btn theme-toggle" id="theme-toggle" type="button" aria-label="Switch to day theme">
+          <svg class="tt" viewBox="0 0 24 24" aria-hidden="true">
+            <mask id="tt-mask">
+              <rect width="24" height="24" fill="#fff" />
+              <circle class="tt-cut" cx="12" cy="12" r="7.2" fill="#000" />
+            </mask>
+            <circle class="tt-core" cx="12" cy="12" r="8" mask="url(#tt-mask)" />
+            <g class="tt-rays">
+              <path
+                d="M12 1.6v2.6M12 19.8v2.6M1.6 12h2.6M19.8 12h2.6M4.65 4.65l1.85 1.85M17.5 17.5l1.85 1.85M4.65 19.35l1.85-1.85M17.5 6.5l1.85-1.85" />
+            </g>
           </svg>
         </button>
-        <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
-          <svg class="ic ic-open">
-            <use href="#i-menu" />
-          </svg>
-          <svg class="ic ic-close">
-            <use href="#i-close" />
-          </svg>
+        <a class="btn btn-sm nav-cta" href="#contact">Let's talk</a>
+        <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false"
+          aria-controls="nav-menu">
+          <span></span><span></span>
         </button>
       </div>
     </div>
+    <div class="nav-progress"><i></i></div>
   </header>
 
   <main id="main">
@@ -271,20 +248,27 @@
     <section id="home" class="hero">
       <div class="wrap hero-grid">
         <div class="hero-copy">
-          <h1 class="hero-title reveal">
-            Hi, I'm <span class="grad">Keshav Goyal</span>
+          <!-- The hero animates in with CSS alone (class "hx"), so the first
+               paint of the page never waits on JavaScript. -->
+          <h1 class="hero-title">
+            <span class="hero-hi"><span class="w"><span class="wi" style="--wi:0">Hi,</span></span> <span
+                class="w"><span class="wi" style="--wi:1">I'm</span></span></span>
+            <span class="hero-name"><span class="w"><span class="wi" style="--wi:2">Keshav</span></span> <span
+                class="w"><span class="wi" style="--wi:3">Goyal</span></span></span>
           </h1>
-          <p class="hero-role reveal">
-            <span id="typed" class="typed"></span><span class="caret" aria-hidden="true"></span>
+          <p class="hero-role hx" style="--i:2">
+            <span class="sr-only">Full Stack Developer, Competitive Programmer and Open Source Contributor — CSE at PEC
+              Chandigarh</span>
+            <span class="role-rot" id="role" aria-hidden="true">Full Stack Developer</span>
           </p>
-          <p class="hero-desc reveal">
-            Pre-final Year CSE undergraduate at Punjab Engineering College building <b>production</b>
-            web platforms, <b>SaaS</b> systems and <b>CRM</b> software shipped on AWS and Vercel.
+          <p class="hero-desc hx" style="--i:3">
+            Pre-final year CSE undergrad building <b>Production</b>
+            web platforms, <b>SaaS</b> systems and <b>Real-time</b> softwares shipped on AWS and Vercel.
           </p>
-          <div class="hero-actions reveal">
+          <div class="hero-actions hx" style="--i:4">
             <a class="btn btn-primary" href="#projects">
               View my work <svg class="ic">
-                <use href="#i-chevron" />
+                <use href="#i-arrow-down" />
               </svg>
             </a>
             <a class="btn btn-ghost" href="resume/Resume.pdf" target="_blank" rel="noopener">
@@ -293,72 +277,70 @@
               </svg> Resume
             </a>
           </div>
-          <dl class="hero-stats reveal">
+          <dl class="hero-stats hx" style="--i:5">
             <div>
-              <dt>600+</dt>
+              <dt data-count="600" data-suffix="+">600+</dt>
               <dd>DSA problems</dd>
             </div>
             <div>
-              <dt>8.79</dt>
+              <dt data-count="8.79" data-decimals="2">8.79</dt>
               <dd>CGPA / 10</dd>
             </div>
             <div>
-              <dt>5+</dt>
+              <dt data-count="5" data-suffix="+">5+</dt>
               <dd>Major Projects</dd>
             </div>
           </dl>
         </div>
 
-        <div class="hero-visual reveal par" data-par="0.12">
-          <div class="portrait">
-            <img src="images/opt/profile-760.webp"
-              srcset="images/opt/profile-400.webp 400w, images/opt/profile-760.webp 760w"
-              sizes="(max-width: 900px) 220px, 340px" width="760" height="760" alt="Portrait of Keshav Goyal"
-              fetchpriority="high" decoding="async" />
+        <!-- portrait in orbit, with two satellites circling it -->
+        <div class="hero-visual hx" style="--i:3">
+          <div class="orbit">
+            <div class="orbit-ring orbit-ring--a"><i></i></div>
+            <div class="orbit-ring orbit-ring--b"><i></i></div>
+            <div class="portrait">
+              <img src="images/opt/profile-760.webp"
+                srcset="images/opt/profile-400.webp 400w, images/opt/profile-760.webp 760w"
+                sizes="(max-width: 760px) 190px, 330px" width="760" height="760" alt="Portrait of Keshav Goyal"
+                fetchpriority="high" decoding="async" />
+            </div>
+            <div class="chip chip--1"><svg class="ic">
+                <use href="#i-stack" />
+              </svg> MERN</div>
+            <div class="chip chip--2"><svg class="ic">
+                <use href="#i-code" />
+              </svg> C++</div>
+            <div class="chip chip--3"><svg class="ic">
+                <use href="#i-spark" />
+              </svg> GenAI</div>
           </div>
-          <div class="chip chip--1"><svg class="ic">
-              <use href="#i-stack" />
-            </svg> MERN</div>
-          <div class="chip chip--2"><svg class="ic">
-              <use href="#i-code" />
-            </svg> C++</div>
-          <div class="chip chip--3"><svg class="ic">
-              <use href="#i-spark" />
-            </svg> GenAI</div>
         </div>
       </div>
 
-      <a class="scroll-cue" href="#about" aria-label="Scroll to about">
-        <svg class="ic">
-          <use href="#i-chevron" />
-        </svg>
-      </a>
     </section>
 
     <!-- ================= ABOUT ================= -->
     <section id="about" class="sec">
       <div class="wrap">
-        <header class="sec-head reveal">
-          <p class="sec-num">01</p>
-          <h2 class="sec-title">About me</h2>
+        <header class="sec-head">
+          <p class="eyebrow rv"><span>01</span><i class="eyebrow-rule"></i></p>
+          <h2 class="sec-title" data-split>About me</h2>
         </header>
 
         <div class="about-grid">
-          <div class="about-text reveal">
+          <div class="about-text rv">
             <p>
               I'm a Pre-final year Computer Science student at <strong>Punjab Engineering
                 College, Chandigarh</strong>, focused on building things that actually ship.
-              Most of my work sits at the intersection of full-stack engineering and
-              applied AI — multi-agent productivity systems, real-time video
-              infrastructure and retrieval pipelines.
             </p>
             <p>
-              I care about the unglamorous parts: priority-scoring engines that pick the
-              right task, Chrome extension that ships in a few&nbsp;KB payload. Alongside that I solve
-              competitive programming problems daily and contribute to open source.
+              Most of my work includes creating <b>efficient</b>, and <strong>user-centric</strong> solutions that
+              bridge the gap between complex engineering and real-world impact. <br />
+              I am a keen problem solver and quite active in competitive programming too. I have also represented
+              my college in <b>ICPC</b> Kanpur Regionals 2026.
             </p>
             <p>
-              I love puzzle solving. I am a Foundational Committee member of the Speed Cubing
+              I love solving puzzles. I am also a part of the Foundational Committee of the Speed Cubing
               Club, PEC. This club is dedicated to promote the cubing culture in Chandigarh by organizing
               various awareness drives, events and competitions.
             </p>
@@ -369,36 +351,37 @@
             </a>
           </div>
 
-          <aside class="about-card reveal par" data-par="0.07">
-            <div class="card-bar"><span></span><span></span><span></span></div>
-            <dl class="facts">
-              <div>
-                <dt><svg class="ic">
-                    <use href="#i-cap" />
-                  </svg> Education</dt>
-                <dd>B.Tech CSE · PEC Chandigarh<br /><span class="muted">2024 – 2028 · CGPA 8.79/10</span></dd>
-              </div>
-              <div>
-                <dt><svg class="ic">
-                    <use href="#i-pin" />
-                  </svg> Based in</dt>
-                <dd>Patiala, Punjab, India</dd>
-              </div>
-              <div>
-                <dt><svg class="ic">
-                    <use href="#i-briefcase" />
-                  </svg> Focus</dt>
-                <dd>Full-stack · Real-time systems · GenAI</dd>
-              </div>
-              <div>
-                <dt><svg class="ic">
-                    <use href="#i-trophy" />
-                  </svg> Achievements</dt>
-                <dd>Leetcode - Knight · Codeforces - Specialist · CodeChef - 3★<br /><span class="muted">ICPC Kanpur
-                    Regionalist</span>
-                </dd>
-              </div>
-            </dl>
+          <aside class="about-side">
+            <div class="card about-card rv">
+              <dl class="facts">
+                <div>
+                  <dt><svg class="ic">
+                      <use href="#i-cap" />
+                    </svg> Education</dt>
+                  <dd>B.Tech CSE · PEC Chandigarh<br /><span class="muted">2024 – 2028 · CGPA 8.79/10</span></dd>
+                </div>
+                <div>
+                  <dt><svg class="ic">
+                      <use href="#i-pin" />
+                    </svg> Based in</dt>
+                  <dd>Patiala, Punjab, India</dd>
+                </div>
+                <div>
+                  <dt><svg class="ic">
+                      <use href="#i-briefcase" />
+                    </svg> Focus</dt>
+                  <dd>Full-stack · Real-time systems · GenAI</dd>
+                </div>
+                <div>
+                  <dt><svg class="ic">
+                      <use href="#i-trophy" />
+                    </svg> Achievements</dt>
+                  <dd>Leetcode - Knight · Codeforces - Specialist · CodeChef - 3★<br /><span class="muted">ICPC
+                      Kanpur Regionalist</span>
+                  </dd>
+                </div>
+              </dl>
+            </div>
           </aside>
         </div>
       </div>
@@ -407,13 +390,13 @@
     <!-- ================= SKILLS ================= -->
     <section id="skills" class="sec">
       <div class="wrap">
-        <header class="sec-head reveal">
-          <p class="sec-num">02</p>
-          <h2 class="sec-title">Skills &amp; tooling</h2>
+        <header class="sec-head">
+          <p class="eyebrow rv"><span>02</span><i class="eyebrow-rule"></i></p>
+          <h2 class="sec-title" data-split>Skills &amp; tooling</h2>
         </header>
 
         <div class="skills-grid">
-          <article class="skill-card reveal">
+          <article class="card skill-card rv">
             <h3><svg class="ic">
                 <use href="#i-code" />
               </svg> Languages</h3>
@@ -426,7 +409,7 @@
             </ul>
           </article>
 
-          <article class="skill-card reveal">
+          <article class="card skill-card rv">
             <h3><svg class="ic">
                 <use href="#i-stack" />
               </svg> Backend &amp; data</h3>
@@ -441,7 +424,7 @@
             </ul>
           </article>
 
-          <article class="skill-card reveal">
+          <article class="card skill-card rv">
             <h3><svg class="ic">
                 <use href="#i-layout" />
               </svg> Frontend</h3>
@@ -455,7 +438,7 @@
             </ul>
           </article>
 
-          <article class="skill-card reveal">
+          <article class="card skill-card rv">
             <h3><svg class="ic">
                 <use href="#i-wrench" />
               </svg> Tools &amp; cloud</h3>
@@ -471,7 +454,7 @@
             </ul>
           </article>
 
-          <article class="skill-card skill-card--wide reveal">
+          <article class="card skill-card skill-card--wide rv">
             <h3><svg class="ic">
                 <use href="#i-trophy" />
               </svg> Competitive programming</h3>
@@ -489,31 +472,22 @@
     <!-- ================= PROJECTS ================= -->
     <section id="projects" class="sec">
       <div class="wrap">
-        <header class="sec-head reveal">
-          <p class="sec-num">03</p>
-          <h2 class="sec-title">Featured projects</h2>
+        <header class="sec-head">
+          <p class="eyebrow rv"><span>03</span><i class="eyebrow-rule"></i></p>
+          <h2 class="sec-title" data-split>Featured projects</h2>
         </header>
 
-        <div class="proj-grid">
+        <div class="proj-list">
 
-          <article class="proj reveal">
+          <article class="card proj rv">
             <div class="proj-media">
               <img src="images/opt/lasminai-960.webp"
                 srcset="images/opt/lasminai-640.webp 640w, images/opt/lasminai-960.webp 960w"
-                sizes="(max-width: 700px) 92vw, (max-width: 1080px) 46vw, 350px" width="960" height="600"
-                alt="LasMinAI dashboard" loading="lazy" decoding="async" />
-              <div class="proj-links">
-                <a href="https://lasmin-ai-280275748399.asia-south1.run.app" target="_blank" rel="noopener"
-                  aria-label="LasMinAI live demo"><svg class="ic">
-                    <use href="#i-link" />
-                  </svg></a>
-                <a href="https://github.com/keshav-pec/LasMinAI" target="_blank" rel="noopener"
-                  aria-label="LasMinAI source"><svg class="ic">
-                    <use href="#i-github" />
-                  </svg></a>
-              </div>
+                sizes="(max-width: 900px) 92vw, 520px" width="960" height="600" alt="LasMinAI dashboard" loading="lazy"
+                decoding="async" />
             </div>
             <div class="proj-body">
+              <p class="proj-num">01</p>
               <h3>LasMinAI — AI Productivity Platform</h3>
               <ul class="proj-points">
                 <li><b>9 interconnected AI modules</b> — task management, workspace planning,
@@ -530,27 +504,28 @@
                 <li>Chrome Extension</li>
                 <li>Google Workspace APIs</li>
               </ul>
+              <div class="proj-links">
+                <a class="btn btn-sm btn-primary" href="https://lasmin-ai-280275748399.asia-south1.run.app"
+                  target="_blank" rel="noopener" aria-label="LasMinAI live demo">Live demo <svg class="ic">
+                    <use href="#i-link" />
+                  </svg></a>
+                <a class="btn btn-sm" href="https://github.com/keshav-pec/LasMinAI" target="_blank" rel="noopener"
+                  aria-label="LasMinAI source"><svg class="ic">
+                    <use href="#i-github" />
+                  </svg> Source</a>
+              </div>
             </div>
           </article>
 
-          <article class="proj reveal">
+          <article class="card proj rv">
             <div class="proj-media">
               <img src="images/opt/nexmeet-960.webp"
                 srcset="images/opt/nexmeet-640.webp 640w, images/opt/nexmeet-960.webp 960w"
-                sizes="(max-width: 700px) 92vw, (max-width: 1080px) 46vw, 350px" width="960" height="600"
+                sizes="(max-width: 900px) 92vw, 520px" width="960" height="600"
                 alt="NexMeet video conferencing interface" loading="lazy" decoding="async" />
-              <div class="proj-links">
-                <a href="https://nexmeetv1.vercel.app/" target="_blank" rel="noopener"
-                  aria-label="NexMeet live demo"><svg class="ic">
-                    <use href="#i-link" />
-                  </svg></a>
-                <a href="https://github.com/keshav-pec/NexMeetv1" target="_blank" rel="noopener"
-                  aria-label="NexMeet source"><svg class="ic">
-                    <use href="#i-github" />
-                  </svg></a>
-              </div>
             </div>
             <div class="proj-body">
+              <p class="proj-num">02</p>
               <h3>NexMeet — Real-Time Video Conferencing</h3>
               <ul class="proj-points">
                 <li>Full-stack conferencing platform supporting <b>50+ concurrent users</b>
@@ -567,22 +542,27 @@
                 <li>WebRTC</li>
                 <li>LiveKit</li>
               </ul>
+              <div class="proj-links">
+                <a class="btn btn-sm btn-primary" href="https://nexmeetv1.vercel.app/" target="_blank" rel="noopener"
+                  aria-label="NexMeet live demo">Live demo <svg class="ic">
+                    <use href="#i-link" />
+                  </svg></a>
+                <a class="btn btn-sm" href="https://github.com/keshav-pec/NexMeetv1" target="_blank" rel="noopener"
+                  aria-label="NexMeet source"><svg class="ic">
+                    <use href="#i-github" />
+                  </svg> Source</a>
+              </div>
             </div>
           </article>
 
-          <article class="proj reveal">
+          <article class="card proj rv">
             <div class="proj-media">
               <img src="images/opt/rag-960.webp" srcset="images/opt/rag-640.webp 640w, images/opt/rag-960.webp 960w"
-                sizes="(max-width: 700px) 92vw, (max-width: 1080px) 46vw, 350px" width="960" height="600"
-                alt="AI knowledge retrieval system" loading="lazy" decoding="async" />
-              <div class="proj-links">
-                <a href="https://github.com/keshav-pec" target="_blank" rel="noopener"
-                  aria-label="RAG project source"><svg class="ic">
-                    <use href="#i-github" />
-                  </svg></a>
-              </div>
+                sizes="(max-width: 900px) 92vw, 520px" width="960" height="600" alt="AI knowledge retrieval system"
+                loading="lazy" decoding="async" />
             </div>
             <div class="proj-body">
+              <p class="proj-num">03</p>
               <h3>AI Knowledge Retrieval System (RAG)</h3>
               <ul class="proj-points">
                 <li>Retrieval-Augmented Generation system processing <b>1,000+ pages</b> and
@@ -599,6 +579,12 @@
                 <li>FastAPI</li>
                 <li>Streamlit</li>
               </ul>
+              <div class="proj-links">
+                <a class="btn btn-sm" href="https://github.com/keshav-pec" target="_blank" rel="noopener"
+                  aria-label="RAG project source"><svg class="ic">
+                    <use href="#i-github" />
+                  </svg> Source</a>
+              </div>
             </div>
           </article>
 
@@ -609,78 +595,81 @@
     <!-- ================= EXPERIENCE ================= -->
     <section id="experience" class="sec">
       <div class="wrap">
-        <header class="sec-head reveal">
-          <p class="sec-num">04</p>
-          <h2 class="sec-title">Experience &amp; education</h2>
+        <header class="sec-head">
+          <p class="eyebrow rv"><span>04</span><i class="eyebrow-rule"></i></p>
+          <h2 class="sec-title" data-split>Experience &amp; education</h2>
         </header>
 
-        <ol class="timeline">
-          <li class="tl-item reveal">
-            <div class="tl-dot"></div>
-            <div class="tl-card">
-              <p class="tl-date">Jun 2026 – Jul 2026</p>
-              <h3>Full Stack Developer Intern</h3>
-              <p class="tl-org"><svg class="ic">
-                  <use href="#i-briefcase" />
-                </svg> Reagvis Labs</p>
-              <ul>
-                <li>Contributed to <b>software architecture</b> using the MERN stack,
-                  collaborating with the development team to build and deploy reliable
-                  production applications on <b>AWS</b>.</li>
-                <li>Worked with AWS-hosted infrastructure, <b>Docker</b> and
-                  <b>GitHub Actions CI/CD</b> to automate build and deployment workflows
-                  and support reliable production releases.
-                </li>
-              </ul>
-            </div>
-          </li>
+        <div class="timeline" id="timeline">
+          <div class="tl-track" aria-hidden="true"><i id="tl-fill"></i></div>
+          <ol>
+            <li class="tl-item rv">
+              <div class="tl-dot"></div>
+              <div class="card tl-card">
+                <p class="tl-date">Jun 2026 – Jul 2026</p>
+                <h3>Full Stack Developer Intern</h3>
+                <p class="tl-org"><svg class="ic">
+                    <use href="#i-briefcase" />
+                  </svg> Reagvis Labs</p>
+                <ul>
+                  <li>Contributed to <b>software architecture</b> using the MERN stack,
+                    collaborating with the development team to build and deploy reliable
+                    production applications on <b>AWS</b>.</li>
+                  <li>Worked with AWS-hosted infrastructure, <b>Docker</b> and
+                    <b>GitHub Actions CI/CD</b> to automate build and deployment workflows
+                    and support reliable production releases.
+                  </li>
+                </ul>
+              </div>
+            </li>
 
-          <li class="tl-item reveal">
-            <div class="tl-dot"></div>
-            <div class="tl-card">
-              <p class="tl-date">Oct 2025 – Nov 2025</p>
-              <h3>Frontend Developer <span class="muted">(Freelance)</span></h3>
-              <p class="tl-org"><svg class="ic">
-                  <use href="#i-briefcase" />
-                </svg> Rohindia</p>
-              <ul>
-                <li>Engineered the frontend interfaces for <b>Cafe Lamhey</b> and
-                  <b>Lamhistan</b> using semantic HTML5 and vanilla JavaScript, achieving
-                  <b>96+ SEO and accessibility scores</b> on Google Lighthouse.
-                </li>
-              </ul>
-            </div>
-          </li>
+            <li class="tl-item rv">
+              <div class="tl-dot"></div>
+              <div class="card tl-card">
+                <p class="tl-date">Oct 2025 – Nov 2025</p>
+                <h3>Frontend Developer <span class="muted">(Freelance)</span></h3>
+                <p class="tl-org"><svg class="ic">
+                    <use href="#i-briefcase" />
+                  </svg> Rohindia</p>
+                <ul>
+                  <li>Engineered the frontend interfaces for <b>Cafe Lamhey</b> and
+                    <b>Lamhistan</b> using semantic HTML5 and vanilla JavaScript, achieving
+                    <b>96+ SEO and accessibility scores</b> on Google Lighthouse.
+                  </li>
+                </ul>
+              </div>
+            </li>
 
-          <li class="tl-item reveal">
-            <div class="tl-dot tl-dot--edu"></div>
-            <div class="tl-card">
-              <p class="tl-date">2024 – 2028</p>
-              <h3>B.Tech, Computer Science &amp; Engineering</h3>
-              <p class="tl-org"><svg class="ic">
-                  <use href="#i-cap" />
-                </svg> Punjab Engineering College, Chandigarh</p>
-              <ul>
-                <li>CGPA <b>8.79 / 10</b>.</li>
-                <li>Coursework: Data Structures, Algorithms, Object Oriented Programming,
-                  Operating Systems, Computer Networks, Database Management Systems, AI/ML.</li>
-              </ul>
-            </div>
-          </li>
-        </ol>
+            <li class="tl-item rv">
+              <div class="tl-dot tl-dot--edu"></div>
+              <div class="card tl-card">
+                <p class="tl-date">2024 – 2028</p>
+                <h3>B.Tech, Computer Science &amp; Engineering</h3>
+                <p class="tl-org"><svg class="ic">
+                    <use href="#i-cap" />
+                  </svg> Punjab Engineering College, Chandigarh</p>
+                <ul>
+                  <li>CGPA <b>8.79 / 10</b>.</li>
+                  <li>Coursework: Data Structures, Algorithms, Object Oriented Programming,
+                    Operating Systems, Computer Networks, Database Management Systems, AI/ML.</li>
+                </ul>
+              </div>
+            </li>
+          </ol>
+        </div>
       </div>
     </section>
 
     <!-- ================= ACHIEVEMENTS ================= -->
     <section id="achievements" class="sec">
       <div class="wrap">
-        <header class="sec-head reveal">
-          <p class="sec-num">05</p>
-          <h2 class="sec-title">Highlights &amp; leadership</h2>
+        <header class="sec-head">
+          <p class="eyebrow rv"><span>05</span><i class="eyebrow-rule"></i></p>
+          <h2 class="sec-title" data-split>Highlights &amp; leadership</h2>
         </header>
 
         <div class="hl-grid">
-          <article class="hl reveal">
+          <article class="card hl rv">
             <h3><svg class="ic">
                 <use href="#i-trophy" />
               </svg> Achievements</h3>
@@ -696,7 +685,7 @@
             </ul>
           </article>
 
-          <article class="hl reveal">
+          <article class="card hl rv">
             <h3><svg class="ic">
                 <use href="#i-users" />
               </svg> Positions of responsibility</h3>
@@ -725,13 +714,13 @@
     <!-- ================= CONTACT ================= -->
     <section id="contact" class="sec">
       <div class="wrap">
-        <header class="sec-head reveal">
-          <p class="sec-num">06</p>
-          <h2 class="sec-title">Get in touch</h2>
+        <header class="sec-head">
+          <p class="eyebrow rv"><span>06</span><i class="eyebrow-rule"></i></p>
+          <h2 class="sec-title" data-split>Get in touch</h2>
         </header>
 
         <div class="contact-grid">
-          <div class="contact-info reveal">
+          <div class="contact-info rv">
             <p class="lead">
               I'm open to <b>collaboration and freelance work</b> — product
               builds, real-time systems and AI integrations. If you have something
@@ -762,7 +751,7 @@
             </ul>
           </div>
 
-          <form class="contact-form reveal" id="contact-form" novalidate>
+          <form class="card contact-form rv" id="contact-form" novalidate>
             <div class="field">
               <label for="f-name">Name</label>
               <input id="f-name" name="name" type="text" autocomplete="name" required />
@@ -792,7 +781,22 @@
 
   </main>
 
-  <footer class="footer">
+  <!-- ================= OUTRO / FOOTER — the view lifts back to the sky ================= -->
+  <footer class="outro" id="outro">
+    <div class="outro-stage">
+      <div class="wrap outro-inner">
+        <p class="outro-line" data-split>Thanks for exploring.</p>
+        <div class="outro-actions rv">
+          <a class="btn btn-primary" href="mailto:keshavpec24@gmail.com"><svg class="ic">
+              <use href="#i-mail" />
+            </svg> Say hello</a>
+          <button class="btn btn-ghost" id="again" type="button"><svg class="ic">
+              <use href="#i-arrow-up" />
+            </svg> Back to the start</button>
+        </div>
+      </div>
+    </div>
+
     <div class="wrap footer-inner">
       <p>&copy; <span id="year">2026</span> Keshav Goyal</p>
       <p class="muted">Last Updated: November 2026</p>
@@ -811,12 +815,13 @@
     </div>
   </footer>
 
-  <button class="to-top" id="to-top" aria-label="Back to top">
+  <button class="to-top" id="to-top" type="button" aria-label="Back to top">
     <svg class="ic">
       <use href="#i-arrow-up" />
     </svg>
   </button>
 
+  <script src="vendor/lenis.min.js" defer></script>
   <script src="script.js" defer></script>
 </body>
 
